@@ -1,5 +1,7 @@
 ﻿using Enterprise.Domain;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HC.Domain.Users;
 
@@ -38,11 +40,9 @@ public sealed class User : AggregateRoot<UserId>
     public RefreshTokenId RefreshTokenId { get; init; }
     public RefreshToken RefreshToken { get; init; }
 
-    // TODO: "Your cannot review your profile!"
+    public ICollection<Review> Reviews { get; }
 
-    private User()
-    {
-    }
+    // TODO: "Your cannot review your profile!"
 
     public void BecomePublisher()
     {
@@ -50,5 +50,22 @@ public sealed class User : AggregateRoot<UserId>
         {
             Role = new UserRole(UserRole.UserRoleEnum.Publisher);
         }
+    }
+
+    public void RemoveReview(ReviewId reviewId)
+    {
+        if (Reviews.Count > 0)
+        {
+            var review = Reviews.FirstOrDefault(x => x.Id == reviewId);
+
+            if (review is not null)
+            {
+                Reviews.Remove(review);
+            }
+        }
+    }
+
+    private User()
+    {
     }
 }

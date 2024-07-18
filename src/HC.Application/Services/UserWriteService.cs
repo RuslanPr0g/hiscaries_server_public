@@ -1,4 +1,5 @@
-﻿using HC.Application.Interface;
+﻿using HC.Application.Common.Constants;
+using HC.Application.Interface;
 using HC.Application.Models.Response;
 using HC.Application.Options;
 using HC.Application.Users.Command;
@@ -33,14 +34,30 @@ public sealed class UserWriteService : IUserWriteService
 
     public async Task<BaseResult> BecomePublisher(string username)
     {
-        User user = await _repository.GetUserByUsername(username);
+        User? user = await _repository.GetUserByUsername(username);
+
+        if (user is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.UserIsNotFound);
+        }
+
         user.BecomePublisher();
+
         return BaseResult.CreateSuccess();
     }
 
-    public Task<BaseResult> DeleteReview(DeleteReviewCommand command)
+    public async Task<BaseResult> DeleteReview(DeleteReviewCommand command)
     {
-        throw new System.NotImplementedException();
+        User? user = await _repository.GetUserByUsername(command.Username);
+
+        if (user is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.UserIsNotFound);
+        }
+
+        user.RemoveReview(new ReviewId(command.ReviewId));
+
+        return BaseResult.CreateSuccess();
     }
 
     public Task<User> GetUserById(UserId userId)
@@ -114,9 +131,8 @@ public sealed class UserWriteService : IUserWriteService
                     new Claim(JwtRegisteredClaimNames.Sub, user.Username),
                     new Claim(JwtRegisteredClaimNames.Jti, jti),
                     new Claim(JwtRegisteredClaimNames.Email, user.Username),
-                    new Claim("id", user.Id.ToString()),
-                    new Claim("username", user.Username),
-                    new Claim("hash", user.Password)
+                    new Claim("id", user.Id.Value.ToString()),
+                    new Claim("username", user.Username)
                 }),
             Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifeTime),
             SigningCredentials =

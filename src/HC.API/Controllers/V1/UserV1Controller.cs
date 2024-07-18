@@ -97,7 +97,7 @@ public class UserV1Controller : ControllerBase
         DeleteReviewCommand query = new()
         {
             Username = string.Empty,
-            Id = request.Id
+            ReviewId = request.Id
         };
 
         return Ok(await _mediator.Send(query));

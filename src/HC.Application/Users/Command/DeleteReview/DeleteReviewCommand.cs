@@ -7,5 +7,5 @@ namespace HC.Application.Users.Command;
 public sealed class DeleteReviewCommand : IRequest<BaseResult>
 {
     public string Username { get; set; }
-    public Guid Id { get; set; }
+    public Guid ReviewId { get; set; }
 }
