@@ -1,5 +1,4 @@
-﻿using HashidsNet;
-using HC.Application.DTOs;
+﻿using HC.Application.DTOs;
 using HC.Application.Encryption;
 using HC.Application.Models.Response;
 using HC.Application.Users.Command;
@@ -29,7 +28,6 @@ public class UserV1Controller : ControllerBase
 {
     private const string ErrorOccuredIn = "Error occured in {0}: {1}";
     private readonly IEncryptor _encryptor;
-    private readonly IHashids _hashids;
     private readonly ILogger<UserV1Controller> _logger;
     private readonly IMediator _mediator;
     private readonly TokenValidationParameters _tokenValidationParameters;
@@ -38,48 +36,28 @@ public class UserV1Controller : ControllerBase
         IMediator mediator,
         ILogger<UserV1Controller> logger,
         TokenValidationParameters tokenValidationParameters,
-        IEncryptor encryptor,
-        IHashids hashids)
+        IEncryptor encryptor)
     {
         _mediator = mediator;
         _logger = logger;
         _tokenValidationParameters = tokenValidationParameters;
         _encryptor = encryptor;
-        _hashids = hashids;
-    }
-
-    [AllowAnonymous]
-    [HttpGet("test")]
-    public async Task<IActionResult> GetTest([FromQuery] TestClass pars)
-    {
-        UserConnection user = new(pars.Username, pars.Password);
-
-        await _userRepository.Test(user);
-
-        return Ok();
     }
 
     [HttpGet]
-    public async Task<ActionResult<UserReadDto>> Get([FromQuery] GetUserInfoDto getUserInfoDto)
+    public async Task<ActionResult<UserReadModel>> Get()
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        string username = string.IsNullOrEmpty(getUserInfoDto.Username) ? user.Username : getUserInfoDto.Username;
+        string username = string.Empty;
 
         GetUserInfoQuery query = new()
         {
-            User = user,
             Username = username
         };
 
-        UserReadDto userResult = await _mediator.Send(query);
-        dynamic result = userResult.ToDynamic();
-        result.id = _hashids.Encode(userResult.Id);
+        UserReadModel model = await _mediator.Send(query);
+        model.Id = _hashids.Encode(model.Id);
 
-        return Ok(result);
+        return Ok(model);
     }
 
     [HttpGet("users")]

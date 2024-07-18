@@ -15,3 +15,5 @@
 - add docker to have it all in one place
 - add optimistic concurrency
 - populate this readme with how to run information
+- add unit tests
+- add integration tests
