@@ -22,8 +22,8 @@ public class UpdateUserDataCommandHandler : IRequestHandler<UpdateUserDataComman
     {
         User userExists = await _userService.GetUserByUsername(request.Username);
 
-        if (!string.IsNullOrEmpty(request.UsernameUpdate))
-            userExists = await _userService.GetUserByUsername(request.UsernameUpdate);
+        if (!string.IsNullOrEmpty(request.UpdatedUsername))
+            userExists = await _userService.GetUserByUsername(request.UpdatedUsername);
 
         IList<User> users = await _userService.GetAllUsers();
         UpdateUserDataResult updateUserDataResult = new(ResultStatus.Success, string.Empty);
@@ -42,7 +42,7 @@ public class UpdateUserDataCommandHandler : IRequestHandler<UpdateUserDataComman
 
         _ = await _userService.UpdateUserData(
             new User(0, 
-                string.IsNullOrEmpty(request.UsernameUpdate) ? request.Username : request.UsernameUpdate,
+                string.IsNullOrEmpty(request.UpdatedUsername) ? request.Username : request.UpdatedUsername,
                 request.Email, )
         {
             Username = ,

@@ -1,12 +1,13 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using HC.Application.Common.Constants;
 using HC.Application.Interface;
-
+using HC.Application.Models.Response;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HC.Application.Users.Command.PublishReview;
 
-public class PublishReviewCommandHandler : IRequestHandler<PublishReviewCommand, int>
+public class PublishReviewCommandHandler : IRequestHandler<PublishReviewCommand, BaseResult>
 {
     private readonly IUserWriteService _userService;
 
@@ -15,14 +16,13 @@ public class PublishReviewCommandHandler : IRequestHandler<PublishReviewCommand,
         _userService = userService;
     }
 
-    public async Task<int> Handle(PublishReviewCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResult> Handle(PublishReviewCommand request, CancellationToken cancellationToken)
     {
-        return await _userService.PublishReview(new Review
+        if (request.Message is null)
         {
-            Id = request.Id,
-            PublisherId = request.PublisherId,
-            ReviewerId = request.ReviewerId,
-            Message = request.Message
-        }, request.User);
+            return BaseResult.CreateFail(UserFriendlyMessages.ReviewMessageCannotBeEmpty);
+        }
+
+        return await _userService.PublishReview(request);
     }
 }

@@ -1,9 +1,8 @@
-﻿using HC.Application.DTOs;
-using MediatR;
+﻿using MediatR;
 
 namespace HC.Application.Users.Query;
 
-public class GetUserInfoQuery : IRequest<UserReadDto>
+public sealed class GetUserInfoQuery : IRequest<UserReadModel>
 {
     public string Username { get; set; }
 }

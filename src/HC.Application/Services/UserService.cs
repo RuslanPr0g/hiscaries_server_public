@@ -96,17 +96,17 @@ public class UserService : IUserWriteService
         return new UpdateUserDataResult(ResultStatus.Success, "User updated");
     }
 
-    public async Task<RegisterUserResult> RegisterUser(User user)
+    public async Task<UserWithTokenResult> RegisterUser(User user)
     {
         User userExists = await GetUserByUsername(user.Username);
 
         IList<User> users = await GetAllUsers();
 
         if (userExists is not null)
-            return new RegisterUserResult(ResultStatus.Fail, "User with this username already exist", null, null);
+            return new UserWithTokenResult(ResultStatus.Fail, "User with this username already exist", null, null);
 
         if (users.Any(u => u.Email == user.Email))
-            return new RegisterUserResult(ResultStatus.Fail, "Email already exists.", null, null);
+            return new UserWithTokenResult(ResultStatus.Fail, "Email already exists.", null, null);
 
         int id = await _userRepository.AddUser(user);
         user.Id = id;
@@ -119,7 +119,7 @@ public class UserService : IUserWriteService
 
         (string generatedToken, string generatedRefreshToken) = await GenerateJwtToken(user);
 
-        return new RegisterUserResult(ResultStatus.Success, string.Empty, generatedToken, generatedRefreshToken);
+        return new UserWithTokenResult(ResultStatus.Success, string.Empty, generatedToken, generatedRefreshToken);
     }
 
     public async Task<(int tr, int ts, double asc)> GetAdvancedInfoByUsername(string username)

@@ -1,13 +1,13 @@
-﻿using HC.Application.Models.Connection;
+﻿using HC.Application.Models.Response;
 using MediatR;
+using System;
 
 namespace HC.Application.Users.Command.PublishReview;
 
-public class PublishReviewCommand : IRequest<int>
+public sealed class PublishReviewCommand : IRequest<BaseResult>
 {
-    public UserConnection User { get; set; }
-    public int Id { get; set; }
-    public int PublisherId { get; set; }
-    public int ReviewerId { get; set; }
-    public string Message { get; set; }
+    public Guid Id { get; set; }
+    public Guid PublisherId { get; set; }
+    public Guid ReviewerId { get; set; }
+    public string? Message { get; set; }
 }

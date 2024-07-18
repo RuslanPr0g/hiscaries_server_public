@@ -1,4 +1,5 @@
-﻿using HC.Application.DTOs;
+﻿using HC.API.Extensions;
+using HC.API.Requests;
 using HC.Application.Encryption;
 using HC.Application.Models.Response;
 using HC.Application.Users.Command;
@@ -12,10 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace HC.API.Controllers;
@@ -47,6 +45,9 @@ public class UserV1Controller : ControllerBase
     [HttpGet]
     public async Task<ActionResult<UserReadModel>> Get()
     {
+        // TODO: add jwt auth
+        // https://www.youtube.com/watch?v=mgeuh8k3I4g&t=550s&ab_channel=NickChapsas
+
         string username = string.Empty;
 
         GetUserInfoQuery query = new()
@@ -54,275 +55,129 @@ public class UserV1Controller : ControllerBase
             Username = username
         };
 
-        UserReadModel model = await _mediator.Send(query);
-        model.Id = _hashids.Encode(model.Id);
-
-        return Ok(model);
-    }
-
-    [HttpGet("users")]
-    public async Task<ActionResult<UserReadDto>> GetUsers()
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        IList<User> users = await _userService.GetAllUsers(user);
-        List<dynamic> result = new();
-
-        foreach (User us in users)
-        {
-            dynamic u = us.ToDynamic();
-            u.id = _hashids.Encode(us.Id);
-            u.userrole = await _userService.GetUserRoleByUsername(us.Username, user);
-            result.Add(u);
-        }
-
-        return Ok(result);
+        return Ok(await _mediator.Send(query));
     }
 
     [HttpGet(APIConstants.BecomePublisher)]
-    public async Task<ActionResult<UserReadDto>> BecomePublisher()
+    public async Task<IActionResult> BecomePublisher()
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        BecomePublisherQuery query = new()
+        BecomePublisherCommand command = new()
         {
-            User = user
+            Username = string.Empty
+        };
+
+        return (await _mediator.Send(command)).ToObjectResult();
+    }
+
+    [HttpGet(APIConstants.Review)]
+    public async Task<ActionResult<IEnumerable<ReviewReadModel>>> Reviews()
+    {
+        GetReviewsQuery query = new()
+        {
+            Username = string.Empty
         };
 
         return Ok(await _mediator.Send(query));
     }
 
-    [HttpGet(APIConstants.Review)]
-    public async Task<IActionResult> Reviews()
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        GetReviewsQuery query = new()
-        {
-            User = user
-        };
-
-        List<Review> result = await _mediator.Send(query);
-        List<dynamic> res = new();
-
-        foreach (Review us in result)
-        {
-            dynamic u = us.ToDynamic();
-            u.publisherId = _hashids.Encode(us.PublisherId);
-            u.reviewerId = _hashids.Encode(us.ReviewerId);
-            res.Add(u);
-        }
-
-        return Ok(res);
-    }
-
     [HttpPost(APIConstants.Review)]
-    public async Task<IActionResult> PublishReview([FromBody] PublishReviewDto publishReviewDto)
+    public async Task<IActionResult> PublishReview([FromBody] PublishReviewRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-        int pubId = _hashids.DecodeSingle(publishReviewDto.PublisherId);
-
-        if (pubId == id) return BadRequest("Your cannot review your profile!");
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
         PublishReviewCommand query = new()
         {
-            User = user,
-            Id = publishReviewDto.Id,
-            PublisherId = pubId,
-            ReviewerId = id,
-            Message = publishReviewDto.Message
+            Id = request.Id,
+            PublisherId = request.PublisherId,
+            ReviewerId = request.ReviewerId,
+            Message = request.Message
         };
 
         return Ok(await _mediator.Send(query));
     }
 
     [HttpPost(APIConstants.DeleteReview)]
-    public async Task<IActionResult> DeleteReview([FromBody] PublishReviewDto publishReviewDto)
+    public async Task<IActionResult> DeleteReview([FromBody] DeleteReviewRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
         DeleteReviewCommand query = new()
         {
-            User = user,
-            Id = publishReviewDto.Id
+            Username = string.Empty,
+            Id = request.Id
         };
 
         return Ok(await _mediator.Send(query));
     }
 
     [HttpPatch(APIConstants.UpdateProfile)]
-    public async Task<IActionResult> UpdateUserData([FromBody] UpdateUserDataUpdateDto updateUserDataDto)
+    public async Task<IActionResult> UpdateUserData([FromBody] UpdateUserDataRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
         UpdateUserDataCommand query = new()
         {
-            User = user,
-            Email = updateUserDataDto.Email,
-            Banned = updateUserDataDto.Banned,
-            BirthDate = updateUserDataDto.BirthDate,
-            PreviousPassword = updateUserDataDto.PreviousPassword,
-            NewPassword = updateUserDataDto.NewPassword,
-            UsernameUpdate = updateUserDataDto.UsernameUpdate
+            Username = string.Empty,
+            Email = request.Email,
+            Banned = request.Banned,
+            BirthDate = request.BirthDate,
+            PreviousPassword = request.PreviousPassword,
+            NewPassword = request.NewPassword,
+            UpdatedUsername = request.UpdatedUsername
         };
 
-        UpdateUserDataResult response = await _mediator.Send(query);
-
-        if (response.ResultStatus is ResultStatus.Fail)
-            return BadRequest(response.FailReason);
-        return Ok(response.ResultStatus);
+        return Ok(await _mediator.Send(query));
     }
 
     [AllowAnonymous]
     [HttpPost(APIConstants.Register)]
-    public async Task<IActionResult> RegisterUser([FromBody] UserCreateDto userCreateDto)
+    public async Task<IActionResult> RegisterUser([FromBody] RegisterUserRequest request)
     {
-        CreateUserCommand command = new()
+        RegisterUserCommand command = new()
         {
-            Username = userCreateDto.Username,
-            Email = userCreateDto.Email,
-            BirthDate = userCreateDto.BirthDate,
-            Password = userCreateDto.Password
+            Username = request.Username,
+            Email = request.Email,
+            BirthDate = request.BirthDate,
+            Password = request.Password
         };
 
-        try
+        UserWithTokenResult result = await _mediator.Send(command);
+
+        return Ok(new
         {
-            RegisterUserResult result = await _mediator.Send(command);
-
-            if (result.ResultStatus is ResultStatus.Fail)
-                return BadRequest(result.FailReason);
-
-            return Ok(new
-            {
-                result.Token,
-                result.RefreshToken
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, nameof(UserV1Controller), ex.Message);
-
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+            result.Token,
+            result.RefreshToken
+        });
     }
 
     [AllowAnonymous]
     [HttpPost(APIConstants.Login)]
-    public async Task<IActionResult> LoginUser([FromBody] UserLoginDto userLoginDto)
+    public async Task<IActionResult> LoginUser([FromBody] UserLoginRequest request)
     {
         LoginUserCommand command = new()
         {
-            Username = userLoginDto.Username,
-            Password = userLoginDto.Password
+            Username = request.Username,
+            Password = request.Password
         };
 
-        try
-        {
-            LoginUserResult result = await _mediator.Send(command);
+        LoginUserResult result = await _mediator.Send(command);
 
-            if (result.ResultStatus is ResultStatus.Fail)
-                return BadRequest(result.FailReason);
-
-            return Ok(new
-            {
-                result.Token,
-                result.RefreshToken
-            });
-        }
-        catch (Exception ex)
+        return Ok(new
         {
-            _logger.LogError(ErrorOccuredIn, nameof(UserV1Controller), ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+            result.Token,
+            result.RefreshToken
+        });
     }
 
     [HttpPost(APIConstants.Refresh)]
-    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenDto userCreateDto)
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
         RefreshTokenCommand command = new()
         {
-            User = user,
-            Token = userCreateDto.Token,
-            RefreshToken = userCreateDto.RefreshToken
+            Token = request.Token,
+            RefreshToken = request.RefreshToken
         };
 
-        try
+        RefreshTokenResponse result = await _mediator.Send(command);
+
+        return Ok(new
         {
-            RefreshTokenResponse result = await _mediator.Send(command);
-
-            if (result.ResultStatus is ResultStatus.Fail)
-                return BadRequest(result.FailReason);
-
-            return Ok(new
-            {
-                result.Token,
-                result.RefreshToken
-            });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, nameof(UserV1Controller), ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
-    }
-
-    private string GetCurrentUsername()
-    {
-        Claim usernameClaim = null;
-        if (HttpContext.User.Identity is ClaimsIdentity identity)
-            usernameClaim = identity.Claims.FirstOrDefault(c => c.Type == "username");
-
-        return usernameClaim?.Value;
-    }
-
-    private int GetCurrentId()
-    {
-        Claim usernameClaim = null;
-        if (HttpContext.User.Identity is ClaimsIdentity identity)
-            usernameClaim = identity.Claims.FirstOrDefault(c => c.Type == "id");
-        bool parsed = int.TryParse(usernameClaim?.Value, out int id);
-        return parsed ? id : -1;
-    }
-
-    private string GetCurrentHash()
-    {
-        Claim hashClaim = null;
-        if (HttpContext.User.Identity is ClaimsIdentity identity)
-            hashClaim = identity.Claims.FirstOrDefault(c => c.Type == "hash");
-
-        return hashClaim?.Value is null
-            ? null
-            : _encryptor.Decrypt(hashClaim.Value);
-    }
-
-    public class TestClass
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
+            result.Token,
+            result.RefreshToken
+        });
     }
 }

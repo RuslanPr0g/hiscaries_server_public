@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using HC.Domain.User;
-using MediatR;
+﻿using MediatR;
+using System.Collections.Generic;
 
 namespace HC.Application.Users.Query;
 
-public class GetReviewsQuery : IRequest<List<Review>>
+public sealed class GetReviewsQuery : IRequest<IEnumerable<ReviewReadModel>>
 {
+    public string Username { get; set; }
 }

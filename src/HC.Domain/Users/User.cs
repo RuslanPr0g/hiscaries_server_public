@@ -34,6 +34,8 @@ public sealed class User : AggregateRoot<UserId>
     public RefreshTokenId RefreshTokenId { get; init; }
     public RefreshToken RefreshToken { get; init; }
 
+    // TODO: "Your cannot review your profile!"
+
     private User()
     {
     }

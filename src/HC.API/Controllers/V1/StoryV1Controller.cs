@@ -1,7 +1,7 @@
 ﻿using HashidsNet;
 using HC.API.RequestQuery;
 using HC.Application.Common.Extentions;
-using HC.Application.DTOs;
+using HC.API.Requests;
 using HC.Application.Encryption;
 using HC.Application.Models.Response;
 using HC.Application.Stories.Command;
@@ -73,10 +73,10 @@ public class StoryV1Controller : ControllerBase
             Genre = getStoryListRequestQuery.Genre
         };
 
-        List<StoryReadDto> result = await _mediator.Send(query);
+        List<StoryReadRequest> result = await _mediator.Send(query);
         List<dynamic> res = new();
 
-        foreach (StoryReadDto story in result)
+        foreach (StoryReadRequest story in result)
         {
             dynamic st = story.ToDynamic();
             st.id = _hashids.Encode(story.Id);
@@ -134,10 +134,10 @@ public class StoryV1Controller : ControllerBase
             All = true
         };
 
-        List<StoryReadDto> stories = await _mediator.Send(query);
+        List<StoryReadRequest> stories = await _mediator.Send(query);
         List<dynamic> result = new();
 
-        foreach (StoryReadDto story in stories)
+        foreach (StoryReadRequest story in stories)
         {
             dynamic st = story.ToDynamic();
             st.id = _hashids.Encode(story.Id);
@@ -177,10 +177,10 @@ public class StoryV1Controller : ControllerBase
             User = user
         };
 
-        List<StoryReadDto> result = await _mediator.Send(query);
+        List<StoryReadRequest> result = await _mediator.Send(query);
         List<dynamic> res = new();
 
-        foreach (StoryReadDto story in result)
+        foreach (StoryReadRequest story in result)
         {
             dynamic st = story.ToDynamic();
             st.id = _hashids.Encode(story.Id);
@@ -216,14 +216,14 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddStory([FromBody] StoryCreateDto storyCreateDto)
+    public async Task<IActionResult> AddStory([FromBody] StoryCreateRequest storyCreateRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
         if (user.Username is null)
             return BadRequest("Token expired");
 
-        string base64Image = storyCreateDto.ImagePreview;
+        string base64Image = storyCreateRequest.ImagePreview;
         byte[] imageInBytes = new byte[10];
 
         if (base64Image is not null)
@@ -239,13 +239,13 @@ public class StoryV1Controller : ControllerBase
         CreateStoryCommand command = new()
         {
             User = user,
-            Title = storyCreateDto.Title,
-            Description = storyCreateDto.Description,
-            AuthorName = storyCreateDto.AuthorName,
-            GenreIds = storyCreateDto.GenreIds,
-            AgeLimit = storyCreateDto.AgeLimit,
+            Title = storyCreateRequest.Title,
+            Description = storyCreateRequest.Description,
+            AuthorName = storyCreateRequest.AuthorName,
+            GenreIds = storyCreateRequest.GenreIds,
+            AgeLimit = storyCreateRequest.AgeLimit,
             DatePublished = DateTime.Now,
-            DateWritten = storyCreateDto.DateWritten,
+            DateWritten = storyCreateRequest.DateWritten,
             ImagePreview = imageInBytes
         };
 
@@ -266,14 +266,14 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPatch]
-    public async Task<IActionResult> UpdateStoryInfo([FromBody] StoryCreateDto storyCreateDto)
+    public async Task<IActionResult> UpdateStoryInfo([FromBody] StoryCreateRequest storyCreateRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
         if (user.Username is null)
             return BadRequest("Token expired");
 
-        string base64Image = storyCreateDto.ImagePreview;
+        string base64Image = storyCreateRequest.ImagePreview;
         byte[] imageInBytes = new byte[10];
 
         if (base64Image is not null)
@@ -289,13 +289,13 @@ public class StoryV1Controller : ControllerBase
         UpdateStoryCommand command = new()
         {
             User = user,
-            Title = storyCreateDto.Title,
-            Description = storyCreateDto.Description,
-            AuthorName = storyCreateDto.AuthorName,
-            GenreIds = storyCreateDto.GenreIds,
-            AgeLimit = storyCreateDto.AgeLimit,
+            Title = storyCreateRequest.Title,
+            Description = storyCreateRequest.Description,
+            AuthorName = storyCreateRequest.AuthorName,
+            GenreIds = storyCreateRequest.GenreIds,
+            AgeLimit = storyCreateRequest.AgeLimit,
             ImagePreview = imageInBytes,
-            StoryId = _hashids.DecodeSingle(storyCreateDto.StoryId)
+            StoryId = _hashids.DecodeSingle(storyCreateRequest.StoryId)
         };
 
         try
@@ -353,12 +353,12 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPost(APIConstants.ReadStory)]
-    public async Task<IActionResult> ReadStory([FromBody] ReadStoryDto readStoryDto)
+    public async Task<IActionResult> ReadStory([FromBody] ReadStoryRequest readStoryRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
         int id = GetCurrentId();
-        int storyId = _hashids.DecodeSingle(readStoryDto.StoryId);
+        int storyId = _hashids.DecodeSingle(readStoryRequest.StoryId);
 
         if (user.Username is null || id < 0 || storyId < 0)
             return BadRequest("Token expired");
@@ -368,7 +368,7 @@ public class StoryV1Controller : ControllerBase
             User = user,
             UserId = id,
             StoryId = storyId,
-            Page = readStoryDto.PageRead
+            Page = readStoryRequest.PageRead
         };
 
         try
@@ -423,12 +423,12 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPost(APIConstants.BookmarkStory)]
-    public async Task<IActionResult> BookmarkStory([FromBody] BookmarkStoryDto readStoryDto)
+    public async Task<IActionResult> BookmarkStory([FromBody] BookmarkStoryRequest readStoryRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
         int id = GetCurrentId();
-        int storyId = _hashids.DecodeSingle(readStoryDto.StoryId);
+        int storyId = _hashids.DecodeSingle(readStoryRequest.StoryId);
 
         if (user.Username is null || id < 0 || storyId < 0)
             return BadRequest("Token expired");
@@ -454,7 +454,7 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPost(APIConstants.AddPage)]
-    public async Task<IActionResult> AddPage([FromBody] StoryPageCreateDto storyPageCreateDto)
+    public async Task<IActionResult> AddPage([FromBody] StoryPageCreateRequest storyPageCreateRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
@@ -464,9 +464,9 @@ public class StoryV1Controller : ControllerBase
         CreateStoryPageCommand command = new()
         {
             User = user,
-            StoryId = _hashids.DecodeSingle(storyPageCreateDto.StoryId),
-            Content = storyPageCreateDto.Content,
-            Page = storyPageCreateDto.Page
+            StoryId = _hashids.DecodeSingle(storyPageCreateRequest.StoryId),
+            Content = storyPageCreateRequest.Content,
+            Page = storyPageCreateRequest.Page
         };
 
         try
@@ -486,7 +486,7 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPost(APIConstants.UpdatePages)]
-    public async Task<IActionResult> UpdatePages([FromBody] StoryPagesCreateDto storyPageCreateDto)
+    public async Task<IActionResult> UpdatePages([FromBody] StoryPagesCreateRequest storyPageCreateRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
@@ -496,8 +496,8 @@ public class StoryV1Controller : ControllerBase
         CreateStoryPagesCommand command = new()
         {
             User = user,
-            StoryId = _hashids.DecodeSingle(storyPageCreateDto.StoryId),
-            Content = storyPageCreateDto.Content
+            StoryId = _hashids.DecodeSingle(storyPageCreateRequest.StoryId),
+            Content = storyPageCreateRequest.Content
         };
 
         try
@@ -518,7 +518,7 @@ public class StoryV1Controller : ControllerBase
 
 
     [HttpPost(APIConstants.AddComment)]
-    public async Task<IActionResult> AddComment([FromBody] CreateCommentDto createCommentDto)
+    public async Task<IActionResult> AddComment([FromBody] CreateCommentRequest createCommentRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
@@ -532,9 +532,9 @@ public class StoryV1Controller : ControllerBase
             User = user,
             Comment = new Comment
             {
-                StoryId = _hashids.DecodeSingle(createCommentDto.StoryId),
+                StoryId = _hashids.DecodeSingle(createCommentRequest.StoryId),
                 UserId = userId,
-                Content = createCommentDto.Content,
+                Content = createCommentRequest.Content,
                 CommentedAt = DateTime.Now
             }
         };
@@ -591,7 +591,7 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPost(APIConstants.Score)]
-    public async Task<IActionResult> ScoreStory([FromBody] ScoreStoryDto createCommentDto)
+    public async Task<IActionResult> ScoreStory([FromBody] ScoreStoryRequest createCommentRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
@@ -603,8 +603,8 @@ public class StoryV1Controller : ControllerBase
         StoryScoreCommand command = new()
         {
             User = user,
-            StoryId = _hashids.DecodeSingle(createCommentDto.StoryId),
-            Score = createCommentDto.Score,
+            StoryId = _hashids.DecodeSingle(createCommentRequest.StoryId),
+            Score = createCommentRequest.Score,
             UserId = id
         };
 
@@ -623,7 +623,7 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPost(APIConstants.DeleteComment)]
-    public async Task<IActionResult> DeleteComment([FromBody] CreateCommentDto createCommentDto)
+    public async Task<IActionResult> DeleteComment([FromBody] CreateCommentRequest createCommentRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
@@ -635,7 +635,7 @@ public class StoryV1Controller : ControllerBase
         DeleteCommentCommand command = new()
         {
             User = user,
-            Id = createCommentDto.Id
+            Id = createCommentRequest.Id
         };
 
         try
@@ -652,7 +652,7 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPost(APIConstants.DeleteStory)]
-    public async Task<IActionResult> DeleteComment([FromBody] ScoreStoryDto createCommentDto)
+    public async Task<IActionResult> DeleteComment([FromBody] ScoreStoryRequest createCommentRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
@@ -664,7 +664,7 @@ public class StoryV1Controller : ControllerBase
         DeleteStoryCommand command = new()
         {
             User = user,
-            StoryId = _hashids.DecodeSingle(createCommentDto.StoryId)
+            StoryId = _hashids.DecodeSingle(createCommentRequest.StoryId)
         };
 
         try
@@ -681,7 +681,7 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPatch(APIConstants.UpdateComment)]
-    public async Task<IActionResult> UpdateComment([FromBody] CreateCommentDto createCommentDto)
+    public async Task<IActionResult> UpdateComment([FromBody] CreateCommentRequest createCommentRequest)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
@@ -694,9 +694,9 @@ public class StoryV1Controller : ControllerBase
         {
             User = user,
             UserId = id,
-            Id = createCommentDto.Id,
-            StoryId = _hashids.DecodeSingle(createCommentDto.StoryId),
-            Content = createCommentDto.Content
+            Id = createCommentRequest.Id,
+            StoryId = _hashids.DecodeSingle(createCommentRequest.StoryId),
+            Content = createCommentRequest.Content
         };
 
         try
@@ -762,7 +762,7 @@ public class StoryV1Controller : ControllerBase
 
         byte[] result = await System.IO.File.ReadAllBytesAsync("audios/" + story?.FileId + ".mp3");
 
-        List<GetStoryFiles> storyFilesRead = audioModels.Select(x =>
+        List<GetStoryFilesRequest> storyFilesRead = audioModels.Select(x =>
             new GetStoryFiles(x.Id, x.FileId, x.DateAdded, x.Name, result)).ToList();
 
         return Ok(storyFilesRead);
@@ -770,7 +770,7 @@ public class StoryV1Controller : ControllerBase
 
     [HttpPost("audio")]
     [AllowAnonymous]
-    public async Task<IActionResult> AddAudioForStory([FromBody] CreateAudioModel audio)
+    public async Task<IActionResult> AddAudioForStory([FromBody] CreateAudioModelRequest audio)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
@@ -794,7 +794,7 @@ public class StoryV1Controller : ControllerBase
     }
 
     [HttpPut("audio")]
-    public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudioDto audio)
+    public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudioRequest audio)
     {
         UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 

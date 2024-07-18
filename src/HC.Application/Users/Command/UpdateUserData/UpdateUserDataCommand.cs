@@ -1,15 +1,14 @@
-﻿using System;
-using HC.Application.Models.Connection;
-using HC.Application.Models.Response;
+﻿using HC.Application.Models.Response;
 using MediatR;
+using System;
 
 namespace HC.Application.Users.Command;
 
-public class UpdateUserDataCommand : IRequest<UpdateUserDataResult>
+public sealed class UpdateUserDataCommand : IRequest<BaseResult>
 {
     public string Username { get; set; }
     public string Email { get; set; }
-    public string UsernameUpdate { get; set; }
+    public string UpdatedUsername { get; set; }
     public bool Banned { get; set; } = false;
     public DateTime BirthDate { get; set; }
 

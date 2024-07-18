@@ -18,7 +18,7 @@ public class ValidationFilter : IAsyncActionFilter
                 .Where(x => x.Value.Errors.Count > 0)
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value.Errors.Select(x => x.ErrorMessage)).ToArray();
 
-            ErrorResponse errorResponse = new ErrorResponse(new List<ErrorMessage>());
+            ErrorResult errorResponse = new ErrorResult(new List<ErrorMessage>());
 
             foreach (KeyValuePair<string, IEnumerable<string>> error in errors)
             foreach (string subError in error.Value)

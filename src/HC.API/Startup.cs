@@ -40,10 +40,10 @@ public class Startup
         services.AddAutoMapper(config =>
         {
             config.AddProfile(new AssemblyMappingProfile(Assembly.GetExecutingAssembly()));
-            config.AddProfile(new AssemblyMappingProfile(typeof(CreateUserCommandHandler).Assembly));
+            config.AddProfile(new AssemblyMappingProfile(typeof(RegisterUserCommandHandler).Assembly));
         });
 
-        services.AddMediatR(typeof(CreateUserCommandHandler).Assembly);
+        services.AddMediatR(typeof(RegisterUserCommandHandler).Assembly);
 
         services.AddLogging();
 
