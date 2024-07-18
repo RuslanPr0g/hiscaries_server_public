@@ -1,6 +1,5 @@
 ﻿using HC.API.Extensions;
 using HC.API.Requests;
-using HC.Application.Encryption;
 using HC.Application.Models.Response;
 using HC.Application.Users.Command;
 using HC.Application.Users.Command.LoginUser;
@@ -13,18 +12,19 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace HC.API.Controllers;
 
+[Authorize]
 [Route(APIConstants.User)]
 [ApiController]
 [ApiVersion("1.0")]
-[Authorize]
 public class UserV1Controller : ControllerBase
 {
     private const string ErrorOccuredIn = "Error occured in {0}: {1}";
-    private readonly IEncryptor _encryptor;
     private readonly ILogger<UserV1Controller> _logger;
     private readonly IMediator _mediator;
     private readonly TokenValidationParameters _tokenValidationParameters;
@@ -32,13 +32,11 @@ public class UserV1Controller : ControllerBase
     public UserV1Controller(
         IMediator mediator,
         ILogger<UserV1Controller> logger,
-        TokenValidationParameters tokenValidationParameters,
-        IEncryptor encryptor)
+        TokenValidationParameters tokenValidationParameters)
     {
         _mediator = mediator;
         _logger = logger;
         _tokenValidationParameters = tokenValidationParameters;
-        _encryptor = encryptor;
     }
 
     [HttpGet]
@@ -178,5 +176,23 @@ public class UserV1Controller : ControllerBase
             result.Token,
             result.RefreshToken
         });
+    }
+
+    private string GetCurrentUsername()
+    {
+        Claim usernameClaim = null;
+        if (HttpContext.User.Identity is ClaimsIdentity identity)
+            usernameClaim = identity.Claims.FirstOrDefault(c => c.Type == "username");
+
+        return usernameClaim?.Value;
+    }
+
+    private int GetCurrentId()
+    {
+        Claim usernameClaim = null;
+        if (HttpContext.User.Identity is ClaimsIdentity identity)
+            usernameClaim = identity.Claims.FirstOrDefault(c => c.Type == "id");
+        bool parsed = int.TryParse(usernameClaim?.Value, out int id);
+        return parsed ? id : -1;
     }
 }

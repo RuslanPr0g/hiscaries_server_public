@@ -18,8 +18,6 @@ public interface IStoryWriteService
     Task<BaseResult> AddComment(AddCommentCommand command);
     Task<BaseResult> AddStoryScore(StoryScoreCommand command);
     Task<UpdateStoryInfoResult> BookmarkStory(BookmarkStoryCommand command);
-    Task<BaseResult> AddImageToStory(StoryId storyId, string imagePath);
-    Task<BaseResult> AddImageToStoryByBase64(StoryId storyId, byte[] base64);
     Task<BaseResult> ReadStoryHistory(ReadStoryCommand command);
     Task<BaseResult> CreateGenre(CreateGenreCommand request);
     Task<BaseResult> UpdateGenre(UpdateGenreCommand request);

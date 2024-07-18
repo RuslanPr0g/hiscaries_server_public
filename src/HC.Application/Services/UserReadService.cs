@@ -1,24 +1,19 @@
 ﻿using HC.Application.Interface;
 using HC.Domain.Users;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HC.Application.Services;
 
 public sealed class UserReadService : IUserReadService
 {
-    public Task<IEnumerable<ReviewReadModel>> GetReviewsFor(string username)
+    private readonly IUserReadRepository _repository;
+
+    public UserReadService(IUserReadRepository repository)
     {
-        throw new System.NotImplementedException();
+        _repository = repository;
     }
 
-    public Task<UserReadModel> GetUserById(UserId userId)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<UserReadModel> GetUserById(UserId userId) => await _repository.GetUserById(userId);
 
-    public Task<UserReadModel> GetUserByUsername(string username)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<UserReadModel> GetUserByUsername(string username) => await _repository.GetUserByUsername(username);
 }

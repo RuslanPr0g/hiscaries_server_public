@@ -2,7 +2,6 @@
 using HC.API.Request;
 using HC.API.Requests;
 using HC.Application.Common.Extentions;
-using HC.Application.Encryption;
 using HC.Application.Stories.Command;
 using HC.Application.Stories.Command.DeleteStory;
 using HC.Application.Stories.Command.ReadStory;
@@ -17,29 +16,27 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace HC.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route(APIConstants.Story)]
 [ApiVersion("1.0")]
-[Authorize]
 public class StoryV1Controller : ControllerBase
 {
     private const string ErrorOccuredIn = "Error occured in {nameof(StoryController)}: {0}";
-    private readonly IEncryptor _encryptor;
     private readonly ILogger<StoryV1Controller> _logger;
     private readonly IMediator _mediator;
 
     public StoryV1Controller(
         IMediator mediator,
-        ILogger<StoryV1Controller> logger,
-        IEncryptor encryptor)
+        ILogger<StoryV1Controller> logger)
     {
         _mediator = mediator;
         _logger = logger;
-        _encryptor = encryptor;
     }
 
     [HttpPost]
@@ -110,7 +107,7 @@ public class StoryV1Controller : ControllerBase
             Username = username
         };
 
-        IEnumerable<StoryReadModel> result = await _mediator.Send(query);
+        IEnumerable<StorySimpleReadModel> result = await _mediator.Send(query);
 
         var response = result.ToList();
         response.Shuffle();
@@ -320,5 +317,23 @@ public class StoryV1Controller : ControllerBase
         };
 
         return (await _mediator.Send(command)).ToObjectResult();
+    }
+
+    private string GetCurrentUsername()
+    {
+        Claim usernameClaim = null;
+        if (HttpContext.User.Identity is ClaimsIdentity identity)
+            usernameClaim = identity.Claims.FirstOrDefault(c => c.Type == "username");
+
+        return usernameClaim?.Value;
+    }
+
+    private int GetCurrentId()
+    {
+        Claim usernameClaim = null;
+        if (HttpContext.User.Identity is ClaimsIdentity identity)
+            usernameClaim = identity.Claims.FirstOrDefault(c => c.Type == "id");
+        bool parsed = int.TryParse(usernameClaim?.Value, out int id);
+        return parsed ? id : -1;
     }
 }

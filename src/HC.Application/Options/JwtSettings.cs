@@ -4,6 +4,6 @@ namespace HC.Application.Options;
 
 public class JwtSettings
 {
-    public string Secret { get; set; }
+    public string Key { get; set; }
     public TimeSpan TokenLifeTime { get; set; }
 }

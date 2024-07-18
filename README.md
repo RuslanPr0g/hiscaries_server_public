@@ -13,6 +13,7 @@
 - refactor persistence level to use ef core for write and dapper for read logic
 - add view sql generation into the migrations feature of ef core
 - add global exception handling
+- add logging for the system
 - .... todo: other points
 - add docker to have it all in one place
 - add optimistic concurrency

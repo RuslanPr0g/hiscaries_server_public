@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace HC.Application.Stories.Query;
 
-public sealed class GetStoryListQuery : IRequest<IEnumerable<StoryReadModel>>
+public sealed class GetStoryListQuery : IRequest<IEnumerable<StorySimpleReadModel>>
 {
     public Guid? Id { get; set; }
     public string SearchTerm { get; set; }

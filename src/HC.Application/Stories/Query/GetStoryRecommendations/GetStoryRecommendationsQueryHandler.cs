@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HC.Application.Stories.Query;
 
-public class GetStoryRecommendationsQueryHandler : IRequestHandler<GetStoryRecommendationsQuery, IEnumerable<StoryReadModel>>
+public class GetStoryRecommendationsQueryHandler : IRequestHandler<GetStoryRecommendationsQuery, IEnumerable<StorySimpleReadModel>>
 {
     private readonly IStoryReadService _storySevice;
 
@@ -15,7 +15,7 @@ public class GetStoryRecommendationsQueryHandler : IRequestHandler<GetStoryRecom
         _storySevice = storyService;
     }
 
-    public async Task<IEnumerable<StoryReadModel>> Handle(GetStoryRecommendationsQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<StorySimpleReadModel>> Handle(GetStoryRecommendationsQuery request, CancellationToken cancellationToken)
     {
         return await _storySevice.GetStoryRecommendations(request);
     }

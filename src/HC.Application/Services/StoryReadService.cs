@@ -16,12 +16,12 @@ public sealed class StoryReadService : IStoryReadService
         throw new System.NotImplementedException();
     }
 
-    public Task<IEnumerable<StoryReadModel>> GetStoryRecommendations(GetStoryRecommendationsQuery request)
+    public Task<IEnumerable<StorySimpleReadModel>> GetStoryRecommendations(GetStoryRecommendationsQuery request)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<IEnumerable<StoryReadModel>> SearchForStory(GetStoryListQuery request)
+    public Task<IEnumerable<StorySimpleReadModel>> SearchForStory(GetStoryListQuery request)
     {
         throw new System.NotImplementedException();
     }

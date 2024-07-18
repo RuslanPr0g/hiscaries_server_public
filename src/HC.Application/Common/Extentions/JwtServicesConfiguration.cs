@@ -40,7 +40,7 @@ public static class JwtServicesConfiguration
         TokenValidationParameters tokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
             ValidateIssuer = false,
             ValidateAudience = false,
             RequireExpirationTime = false,

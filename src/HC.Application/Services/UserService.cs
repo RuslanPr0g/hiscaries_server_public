@@ -37,6 +37,42 @@
 //        _storyRepository = storyRepository;
 //    }
 
+//using HC.Application.Models.Response;
+//using HC.Domain.Users;
+//using MediatR;
+//using System.Collections.Generic;
+
+//User userExists = await _userService.GetUserByUsername(request.Username);
+
+//if (!string.IsNullOrEmpty(request.UpdatedUsername))
+//    userExists = await _userService.GetUserByUsername(request.UpdatedUsername);
+
+//IList<User> users = await _userService.GetAllUsers();
+//UpdateUserDataResult updateUserDataResult = new(ResultStatus.Success, string.Empty);
+//if (userExists is null)
+//    return new UpdateUserDataResult(ResultStatus.Fail, "Something went wrong.");
+
+//if (request.Email != userExists.Email && users.Any(u => u.Email == request.Email) && request.Banned == false)
+//    return new UpdateUserDataResult(ResultStatus.Fail, "Email already exists.");
+
+//if (!string.IsNullOrEmpty(request.NewPassword))
+//{
+//    // TODO:
+//    // updateUserDataResult = await _userService.UpdateUserPassword(request.Username, request.PreviousPassword, request.NewPassword);
+//}
+//_ = await _userService.UpdateUserData(
+//new User(0,
+//string.IsNullOrEmpty(request.UpdatedUsername) ? request.Username : request.UpdatedUsername,
+//request.Email, )
+//{
+//    Username = ,
+//    Email = ,
+//        BirthDate = request.BirthDate,
+//        Banned = request.Banned
+//    }, request.User);
+
+//return updateUserDataResult;
+
 //    public async Task<User> GetUserByUsername(string username)
 //    {
 //        return await _userRepository.GetUserByUsername(username);
