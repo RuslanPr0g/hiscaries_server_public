@@ -1,6 +1,8 @@
 ﻿using HC.Application.Interface;
+using HC.Application.Interface.DataAccess;
 using HC.Infrastructure.DataAccess;
 using HC.Infrastructure.Repository;
+using HC.Infrastructure.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,8 @@ public static class DataAccessServiceConfiguration
 
         services.AddScoped<IUserWriteRepository, EFUserWriteRepository>();
         services.AddScoped<IStoryWriteRepository, EFStoryWriteRepository>();
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         string mainConnectionString = connection.GetConnectionString("PostgresEF");
         services.AddDbContext<HiscaryContext>(options =>

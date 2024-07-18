@@ -4,6 +4,7 @@ using HC.Application.Filters;
 using HC.Application.Options;
 using HC.Application.Users.Command.CreateUser;
 using HC.Infrastructure.Extentions;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -34,7 +35,7 @@ public class Startup
         {
             // TODO: it takes multiple assemblies, maybe separate read and write projects into two?
             cfg.RegisterServicesFromAssemblies(typeof(RegisterUserCommandHandler).Assembly);
-        });
+        }).AddScoped(typeof(IPipelineBehavior<,>), typeof(ISaveChangesPipelineBehavior<,>));
 
         services.AddLogging();
 

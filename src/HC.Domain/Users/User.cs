@@ -22,6 +22,8 @@ public sealed class User : AggregateRoot<UserId>
         BirthDate = birthDate;
         Banned = banned;
         RefreshTokenId = refreshTokenId;
+
+        Role = new UserRole(UserRole.UserRoleEnum.Reader);
     }
 
     public string Username { get; init; }
@@ -31,6 +33,8 @@ public sealed class User : AggregateRoot<UserId>
     public DateTime BirthDate { get; init; }
     public bool Banned { get; init; }
 
+    public UserRole Role { get; private set; }
+
     public RefreshTokenId RefreshTokenId { get; init; }
     public RefreshToken RefreshToken { get; init; }
 
@@ -38,5 +42,13 @@ public sealed class User : AggregateRoot<UserId>
 
     private User()
     {
+    }
+
+    public void BecomePublisher()
+    {
+        if (Role.IsReader)
+        {
+            Role = new UserRole(UserRole.UserRoleEnum.Publisher);
+        }
     }
 }

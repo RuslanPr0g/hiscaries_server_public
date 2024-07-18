@@ -11,9 +11,18 @@ namespace HC.Application.Services;
 
 public sealed class UserWriteService : IUserWriteService
 {
-    public Task<BaseResult> BecomePublisher(string username)
+    private readonly IUserWriteRepository _repository;
+
+    public UserWriteService(IUserWriteRepository repository)
     {
-        throw new System.NotImplementedException();
+        _repository = repository;
+    }
+
+    public async Task<BaseResult> BecomePublisher(string username)
+    {
+        User user = await _repository.GetUserByUsername(username);
+        user.BecomePublisher();
+        return BaseResult.CreateSuccess();
     }
 
     public Task<BaseResult> DeleteReview(DeleteReviewCommand command)

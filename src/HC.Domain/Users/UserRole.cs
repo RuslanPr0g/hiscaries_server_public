@@ -17,6 +17,10 @@ public sealed record class UserRole : IValueObject<UserRoleEnum>
 
     public UserRoleEnum Value { get; init; }
 
+    public bool IsAdmin => Value == UserRoleEnum.Admin;
+    public bool IsReader => Value == UserRoleEnum.Admin;
+    public bool IsPublisher => Value == UserRoleEnum.Admin;
+
     private UserRole()
     {
     }
