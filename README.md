@@ -11,9 +11,11 @@
 - refactor API level to use all the best practices regarding REST, etc.
 - refactor persistence level to use ef core for write and dapper for read logic
 - add view sql generation into the migrations feature of ef core
+- add global exception handling
 - .... todo: other points
 - add docker to have it all in one place
 - add optimistic concurrency
 - populate this readme with how to run information
 - add unit tests
 - add integration tests
+- fix TODOs

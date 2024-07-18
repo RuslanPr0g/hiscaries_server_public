@@ -7,17 +7,17 @@ using MediatR;
 
 namespace HC.Application.Stories.Query.GetGenreList;
 
-public class GetGenreListQueryHandler : IRequestHandler<GetGenreListQuery, List<Genre>>
+public class GetGenreListQueryHandler : IRequestHandler<GetGenreListQuery, IEnumerable<GenreReadModel>>
 {
-    private readonly IStoryWriteService _storySevice;
+    private readonly IStoryReadService _storySevice;
 
-    public GetGenreListQueryHandler(IStoryWriteService storyService)
+    public GetGenreListQueryHandler(IStoryReadService storyService)
     {
         _storySevice = storyService;
     }
 
-    public async Task<List<Genre>> Handle(GetGenreListQuery request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<GenreReadModel>> Handle(GetGenreListQuery request, CancellationToken cancellationToken)
     {
-        return await _storySevice.GetBookMarks(request.User);
+        return await _storySevice.GetAllGenres();
     }
 }

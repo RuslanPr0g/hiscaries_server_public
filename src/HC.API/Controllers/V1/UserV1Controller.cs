@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HC.API.Controllers;
@@ -58,6 +57,17 @@ public class UserV1Controller : ControllerBase
         return Ok(await _mediator.Send(query));
     }
 
+    [HttpGet("info")]
+    public async Task<ActionResult<UserReadModel>> Get([FromQuery] string username)
+    {
+        GetUserInfoQuery query = new()
+        {
+            Username = username
+        };
+
+        return Ok(await _mediator.Send(query));
+    }
+
     [HttpGet(APIConstants.BecomePublisher)]
     public async Task<IActionResult> BecomePublisher()
     {
@@ -67,17 +77,6 @@ public class UserV1Controller : ControllerBase
         };
 
         return (await _mediator.Send(command)).ToObjectResult();
-    }
-
-    [HttpGet(APIConstants.Review)]
-    public async Task<ActionResult<IEnumerable<ReviewReadModel>>> Reviews()
-    {
-        GetReviewsQuery query = new()
-        {
-            Username = string.Empty
-        };
-
-        return Ok(await _mediator.Send(query));
     }
 
     [HttpPost(APIConstants.Review)]

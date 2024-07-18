@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Stories\Command\DeleteStory\" />
+      <Folder Include="StoryPages\Query\" />
     </ItemGroup>
 
 </Project>

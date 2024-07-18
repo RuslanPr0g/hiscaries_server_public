@@ -1,29 +1,22 @@
-﻿using HashidsNet;
-using HC.API.RequestQuery;
-using HC.Application.Common.Extentions;
+﻿using HC.API.Extensions;
+using HC.API.Request;
 using HC.API.Requests;
+using HC.Application.Common.Extentions;
 using HC.Application.Encryption;
-using HC.Application.Models.Response;
 using HC.Application.Stories.Command;
+using HC.Application.Stories.Command.DeleteStory;
 using HC.Application.Stories.Command.ReadStory;
 using HC.Application.Stories.Command.ScoreStory;
-using HC.Application.Stories.DeleteStory;
 using HC.Application.Stories.Query;
-using HC.Application.Stories.Query.Bookmarks;
 using HC.Application.Stories.Query.GetGenreList;
-using HC.Application.Stories.Query.History;
-using HC.Application.StoryPages.Command;
 using HC.Application.StoryPages.Command.CreateStoryPages;
-using HC.Application.StoryPages.Query;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace HC.API.Controllers;
@@ -36,194 +29,99 @@ public class StoryV1Controller : ControllerBase
 {
     private const string ErrorOccuredIn = "Error occured in {nameof(StoryController)}: {0}";
     private readonly IEncryptor _encryptor;
-    private readonly IHashids _hashids;
     private readonly ILogger<StoryV1Controller> _logger;
     private readonly IMediator _mediator;
 
     public StoryV1Controller(
         IMediator mediator,
         ILogger<StoryV1Controller> logger,
-        IEncryptor encryptor,
-        IHashids hashids)
+        IEncryptor encryptor)
     {
         _mediator = mediator;
         _logger = logger;
         _encryptor = encryptor;
-        _storyRepository = storyRepository;
-        _hashids = hashids;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<Story>>> Get([FromQuery] GetStoryListRequestQuery getStoryListRequestQuery)
+    [HttpPost]
+    public async Task<ActionResult<IEnumerable<StoryReadModel>>> Get([FromBody] GetStoryListRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        int storyId = string.IsNullOrEmpty(getStoryListRequestQuery.Id)
-            ? 0
-            : _hashids.DecodeSingle(getStoryListRequestQuery.Id);
-
         GetStoryListQuery query = new()
         {
-            User = user,
-            Id = storyId,
-            Search = getStoryListRequestQuery.Search,
-            Genre = getStoryListRequestQuery.Genre
+            Id = request.Id,
+            SearchTerm = request.Search,
+            Genre = request.Genre
         };
 
-        List<StoryReadRequest> result = await _mediator.Send(query);
-        List<dynamic> res = new();
-
-        foreach (StoryReadRequest story in result)
-        {
-            dynamic st = story.ToDynamic();
-            st.id = _hashids.Encode(story.Id);
-            st.publisherId = _hashids.Encode(story.Publisher.Id);
-            res.Add(st);
-        }
-
-        return Ok(res);
+        return Ok(await _mediator.Send(query));
     }
 
     [HttpPost("genres")]
-    public async Task<IActionResult> AddGenre([FromBody] Genre genre)
+    public async Task<IActionResult> AddGenre([FromBody] CreateGenreRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        return Ok(await _storyRepository.AddGenre(genre, user));
-    }
-
-    [HttpPatch("genre")]
-    public async Task<IActionResult> EditGenre([FromBody] Genre genre)
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        return Ok(await _storyRepository.UpdateGenre(genre, user));
-    }
-
-    [HttpPost("genre/delete")]
-    public async Task<IActionResult> DeleteGenre([FromBody] Genre genre)
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        return Ok(await _storyRepository.DeleteGenre(genre, user));
-    }
-
-    [HttpGet("stories")]
-    public async Task<ActionResult<List<Story>>> Get()
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        GetStoryListQuery query = new()
+        CreateGenreCommand command = new()
         {
-            User = user,
-            All = true
+            Name = request.Name,
+            Description = request.Description,
+            ImagePreview = request.ImagePreview
         };
 
-        List<StoryReadRequest> stories = await _mediator.Send(query);
-        List<dynamic> result = new();
+        return (await _mediator.Send(command)).ToObjectResult();
+    }
 
-        foreach (StoryReadRequest story in stories)
+    [HttpPatch("genres")]
+    public async Task<IActionResult> EditGenre([FromBody] UpdateGenreRequest request)
+    {
+        UpdateGenreCommand command = new()
         {
-            dynamic st = story.ToDynamic();
-            st.id = _hashids.Encode(story.Id);
-            st.publisherId = _hashids.Encode(story.Publisher.Id);
-            result.Add(st);
-        }
+            Id = request.Id,
+            Name = request.Name,
+            Description = request.Description,
+            ImagePreview = request.ImagePreview
+        };
 
-        return Ok(result);
+        return (await _mediator.Send(command)).ToObjectResult();
+    }
+
+    [HttpDelete("genres")]
+    public async Task<IActionResult> DeleteGenre([FromBody] DeleteGenreRequest request)
+    {
+        DeleteGenreCommand command = new()
+        {
+            Id = request.Id,
+        };
+
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpGet(APIConstants.Genres)]
-    public async Task<ActionResult<List<Story>>> GetGenres()
+    public async Task<ActionResult<IEnumerable<GenreReadModel>>> GetGenres()
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        GetGenreListQuery query = new()
-        {
-            User = user
-        };
-
+        GetGenreListQuery query = new();
         return Ok(await _mediator.Send(query));
     }
 
     [HttpGet(APIConstants.Shuffle)]
-    public async Task<ActionResult<List<Story>>> BestToRead()
+    public async Task<ActionResult<IEnumerable<StoryReadModel>>> BestToRead()
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
+        string username = string.Empty;
 
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        GetStoryListQuery query = new()
+        GetStoryRecommendationsQuery query = new()
         {
-            User = user
+            Username = username
         };
 
-        List<StoryReadRequest> result = await _mediator.Send(query);
-        List<dynamic> res = new();
+        IEnumerable<StoryReadModel> result = await _mediator.Send(query);
 
-        foreach (StoryReadRequest story in result)
-        {
-            dynamic st = story.ToDynamic();
-            st.id = _hashids.Encode(story.Id);
-            st.publisherId = _hashids.Encode(story.Publisher.Id);
-            res.Add(st);
-        }
+        var response = result.ToList();
+        response.Shuffle();
 
-        //var notEmptyStories = res.Where(s => s.PageCount > 0);
-        List<dynamic> notEmptyStories = res;
-
-        List<dynamic> listedStories = notEmptyStories.ToList();
-
-        listedStories.Shuffle();
-
-        return Ok(listedStories);
-    }
-
-    [HttpGet(APIConstants.GetPage)]
-    public async Task<ActionResult<List<StoryPage>>> GetPages(string storyId)
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        GetStoryPageListQuery query = new()
-        {
-            User = user,
-            StoryId = _hashids.DecodeSingle(storyId)
-        };
-
-        return Ok(await _mediator.Send(query));
+        return Ok(response);
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddStory([FromBody] StoryCreateRequest storyCreateRequest)
+    public async Task<IActionResult> AddStory([FromBody] StoryUpdateInfoRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        string base64Image = storyCreateRequest.ImagePreview;
+        string base64Image = request.ImagePreview;
         byte[] imageInBytes = new byte[10];
 
         if (base64Image is not null)
@@ -238,42 +136,24 @@ public class StoryV1Controller : ControllerBase
 
         CreateStoryCommand command = new()
         {
-            User = user,
-            Title = storyCreateRequest.Title,
-            Description = storyCreateRequest.Description,
-            AuthorName = storyCreateRequest.AuthorName,
-            GenreIds = storyCreateRequest.GenreIds,
-            AgeLimit = storyCreateRequest.AgeLimit,
+            Username = string.Empty,
+            Title = request.Title,
+            Description = request.Description,
+            AuthorName = request.AuthorName,
+            GenreIds = request.GenreIds,
+            AgeLimit = request.AgeLimit,
             DatePublished = DateTime.Now,
-            DateWritten = storyCreateRequest.DateWritten,
+            DateWritten = request.DateWritten,
             ImagePreview = imageInBytes
         };
 
-        try
-        {
-            PublishStoryResult result = await _mediator.Send(command);
-
-            if (result.ResultStatus is ResultStatus.Fail)
-                return BadRequest(result.FailReason);
-
-            return Ok(new { id = _hashids.Encode(result.Id) });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpPatch]
-    public async Task<IActionResult> UpdateStoryInfo([FromBody] StoryCreateRequest storyCreateRequest)
+    public async Task<IActionResult> UpdateStoryInfo([FromBody] StoryUpdateInfoRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        string base64Image = storyCreateRequest.ImagePreview;
+        string base64Image = request.ImagePreview;
         byte[] imageInBytes = new byte[10];
 
         if (base64Image is not null)
@@ -288,578 +168,157 @@ public class StoryV1Controller : ControllerBase
 
         UpdateStoryCommand command = new()
         {
-            User = user,
-            Title = storyCreateRequest.Title,
-            Description = storyCreateRequest.Description,
-            AuthorName = storyCreateRequest.AuthorName,
-            GenreIds = storyCreateRequest.GenreIds,
-            AgeLimit = storyCreateRequest.AgeLimit,
+            Username = string.Empty,
+            Title = request.Title,
+            Description = request.Description,
+            AuthorName = request.AuthorName,
+            GenreIds = request.GenreIds,
+            AgeLimit = request.AgeLimit,
             ImagePreview = imageInBytes,
-            StoryId = _hashids.DecodeSingle(storyCreateRequest.StoryId)
+            StoryId = request.StoryId.Value
         };
 
-        try
-        {
-            PublishStoryResult result = await _mediator.Send(command);
-
-            if (result.ResultStatus is ResultStatus.Fail)
-                return BadRequest(result.FailReason);
-
-            return Ok(new { id = _hashids.Encode(result.Id) });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
-    }
-
-    [HttpGet(APIConstants.History)]
-    public async Task<IActionResult> History()
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        HistoryQuery query = new()
-        {
-            User = user,
-            UserId = id
-        };
-
-        try
-        {
-            List<StoryReadHistoryProgress> result = await _mediator.Send(query);
-            List<dynamic> res = new();
-
-            foreach (StoryReadHistoryProgress story in result)
-            {
-                dynamic st = story.ToDynamic();
-                st.storyId = _hashids.Encode(story.StoryId);
-                st.publisherId = _hashids.Encode(story.PublisherId);
-                res.Add(st);
-            }
-
-            return Ok(res);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpPost(APIConstants.ReadStory)]
     public async Task<IActionResult> ReadStory([FromBody] ReadStoryRequest readStoryRequest)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-        int storyId = _hashids.DecodeSingle(readStoryRequest.StoryId);
-
-        if (user.Username is null || id < 0 || storyId < 0)
-            return BadRequest("Token expired");
-
         ReadStoryCommand command = new()
         {
-            User = user,
-            UserId = id,
-            StoryId = storyId,
+            UserId = new Guid(),
+            StoryId = new Guid(),
             Page = readStoryRequest.PageRead
         };
 
-        try
-        {
-            int result = await _mediator.Send(command);
-
-            return Ok(new { id = _hashids.Encode(result) });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
-    }
-
-    [HttpGet(APIConstants.BookmarkStory)]
-    public async Task<IActionResult> GetBookmarksStory()
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-
-        if (user.Username is null || id < 0)
-            return BadRequest("Token expired");
-
-        BookmarkStoryQuery command = new()
-        {
-            User = user,
-            UserId = id
-        };
-
-        try
-        {
-            List<Story> result = await _mediator.Send(command);
-            List<dynamic> res = new();
-
-            foreach (Story story in result)
-            {
-                dynamic st = story.ToDynamic();
-                st.id = _hashids.Encode(story.Id);
-                st.publisherId = _hashids.Encode(story.PublisherId);
-                res.Add(st);
-            }
-
-            return Ok(res);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpPost(APIConstants.BookmarkStory)]
     public async Task<IActionResult> BookmarkStory([FromBody] BookmarkStoryRequest readStoryRequest)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-        int storyId = _hashids.DecodeSingle(readStoryRequest.StoryId);
-
-        if (user.Username is null || id < 0 || storyId < 0)
-            return BadRequest("Token expired");
-
         BookmarkStoryCommand command = new()
         {
-            User = user,
-            UserId = id,
-            StoryId = storyId
+            UserId = new Guid(),
+            StoryId = new Guid()
         };
 
-        try
-        {
-            PublishStoryResult result = await _mediator.Send(command);
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
-    [HttpPost(APIConstants.AddPage)]
-    public async Task<IActionResult> AddPage([FromBody] StoryPageCreateRequest storyPageCreateRequest)
+    [HttpPost(APIConstants.Pages)]
+    public async Task<IActionResult> UpdatePages([FromBody] StoryPagesCreateRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        CreateStoryPageCommand command = new()
-        {
-            User = user,
-            StoryId = _hashids.DecodeSingle(storyPageCreateRequest.StoryId),
-            Content = storyPageCreateRequest.Content,
-            Page = storyPageCreateRequest.Page
-        };
-
-        try
-        {
-            AddStoryPageResult result = await _mediator.Send(command);
-
-            if (result.ResultStatus is ResultStatus.Fail)
-                return BadRequest(result.FailReason);
-
-            return Ok("Story page added successfully");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
-    }
-
-    [HttpPost(APIConstants.UpdatePages)]
-    public async Task<IActionResult> UpdatePages([FromBody] StoryPagesCreateRequest storyPageCreateRequest)
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
         CreateStoryPagesCommand command = new()
         {
-            User = user,
-            StoryId = _hashids.DecodeSingle(storyPageCreateRequest.StoryId),
-            Content = storyPageCreateRequest.Content
+            StoryId = request.StoryId,
+            Content = request.Content
         };
 
-        try
-        {
-            AddStoryPageResult result = await _mediator.Send(command);
-
-            if (result.ResultStatus is ResultStatus.Fail)
-                return BadRequest(result.FailReason);
-
-            return Ok("Story pages added successfully");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
 
     [HttpPost(APIConstants.AddComment)]
-    public async Task<IActionResult> AddComment([FromBody] CreateCommentRequest createCommentRequest)
+    public async Task<IActionResult> AddComment([FromBody] CreateCommentRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int userId = GetCurrentId();
-
-        if (user.Username is null || userId < 0)
-            return BadRequest("Token expired");
-
         AddCommentCommand command = new()
         {
-            User = user,
-            Comment = new Comment
-            {
-                StoryId = _hashids.DecodeSingle(createCommentRequest.StoryId),
-                UserId = userId,
-                Content = createCommentRequest.Content,
-                CommentedAt = DateTime.Now
-            }
+            StoryId = request.StoryId,
+            UserId = new Guid(),
+            Content = request.Content,
+            CommentedAt = DateTime.Now
         };
 
-        try
-        {
-            int result = await _mediator.Send(command);
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500,
-                "You didn't read the story to score or comment it! Or you an author ;) you cannot do this with your story!");
-        }
-    }
-
-    [HttpGet(APIConstants.Score)]
-    public async Task<IActionResult> GetScoreStory()
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-
-        if (user.Username is null || id < 0)
-            return BadRequest("Token expired");
-
-        StoryScoreQuery command = new()
-        {
-            User = user
-        };
-
-        try
-        {
-            List<StoryRating> result = await _mediator.Send(command);
-            List<dynamic> res = new();
-
-            foreach (StoryRating story in result)
-            {
-                dynamic st = story.ToDynamic();
-                st.storyId = _hashids.Encode(story.StoryId);
-                st.userId = _hashids.Encode(story.UserId);
-                res.Add(st);
-            }
-
-            return Ok(res);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpPost(APIConstants.Score)]
-    public async Task<IActionResult> ScoreStory([FromBody] ScoreStoryRequest createCommentRequest)
+    public async Task<IActionResult> ScoreStory([FromBody] ScoreStoryRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-
-        if (user.Username is null || id < 0)
-            return BadRequest("Token expired");
-
         StoryScoreCommand command = new()
         {
-            User = user,
-            StoryId = _hashids.DecodeSingle(createCommentRequest.StoryId),
-            Score = createCommentRequest.Score,
-            UserId = id
+            StoryId = request.StoryId,
+            Score = request.Score,
+            UserId = new Guid()
         };
 
-        try
-        {
-            int result = await _mediator.Send(command);
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500,
-                "You didn't read the story to score or comment it! Or you an author ;) you cannot do this with your story!");
-        }
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpPost(APIConstants.DeleteComment)]
-    public async Task<IActionResult> DeleteComment([FromBody] CreateCommentRequest createCommentRequest)
+    public async Task<IActionResult> DeleteComment([FromQuery] Guid commentId)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-
-        if (user.Username is null || id < 0)
-            return BadRequest("Token expired");
-
         DeleteCommentCommand command = new()
         {
-            User = user,
-            Id = createCommentRequest.Id
+            Id = commentId
         };
 
-        try
-        {
-            int result = await _mediator.Send(command);
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpPost(APIConstants.DeleteStory)]
-    public async Task<IActionResult> DeleteComment([FromBody] ScoreStoryRequest createCommentRequest)
+    public async Task<IActionResult> DeleteStory([FromQuery] Guid storyId)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-
-        if (user.Username is null || id < 0)
-            return BadRequest("Token expired");
-
         DeleteStoryCommand command = new()
         {
-            User = user,
-            StoryId = _hashids.DecodeSingle(createCommentRequest.StoryId)
+            StoryId = storyId
         };
 
-        try
-        {
-            int result = await _mediator.Send(command);
-
-            return Ok(new { id = _hashids.Encode(result) });
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpPatch(APIConstants.UpdateComment)]
-    public async Task<IActionResult> UpdateComment([FromBody] CreateCommentRequest createCommentRequest)
+    public async Task<IActionResult> UpdateComment([FromBody] UpdateCommentRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-
-        if (user.Username is null || id < 0)
-            return BadRequest("Token expired");
-
         UpdateCommentCommand command = new()
         {
-            User = user,
-            UserId = id,
-            Id = createCommentRequest.Id,
-            StoryId = _hashids.DecodeSingle(createCommentRequest.StoryId),
-            Content = createCommentRequest.Content
+            UserId = new Guid(),
+            Id = request.Id,
+            StoryId = request.StoryId,
+            Content = request.Content
         };
 
-        try
-        {
-            int result = await _mediator.Send(command);
-
-            return Ok(result);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
-    }
-
-    [HttpGet(APIConstants.GetAllComments)]
-    public async Task<IActionResult> GetAllComments()
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        int id = GetCurrentId();
-
-        if (user.Username is null || id < 0)
-            return BadRequest("Token expired");
-
-        GetAllCommentsQuery command = new()
-        {
-            User = user
-        };
-
-        try
-        {
-            List<Comment> result = await _mediator.Send(command);
-            List<dynamic> res = new();
-
-            foreach (Comment story in result)
-            {
-                dynamic st = story.ToDynamic();
-                st.storyId = _hashids.Encode(story.StoryId);
-                st.userId = _hashids.Encode(story.UserId);
-                res.Add(st);
-            }
-
-            return Ok(res);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ErrorOccuredIn, ex.Message);
-            return StatusCode(500, "Our monkey team is working on a problem right now");
-        }
-    }
-
-    [HttpGet("audio")]
-    public async Task<IActionResult> GetAudioForStory([FromQuery] int storyId)
-    {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        List<StoryAudio> audioModels = await _storyRepository.GetAudio(storyId, user);
-        StoryAudio story = audioModels.FirstOrDefault();
-
-        byte[] result = await System.IO.File.ReadAllBytesAsync("audios/" + story?.FileId + ".mp3");
-
-        List<GetStoryFilesRequest> storyFilesRead = audioModels.Select(x =>
-            new GetStoryFiles(x.Id, x.FileId, x.DateAdded, x.Name, result)).ToList();
-
-        return Ok(storyFilesRead);
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpPost("audio")]
     [AllowAnonymous]
-    public async Task<IActionResult> AddAudioForStory([FromBody] CreateAudioModelRequest audio)
+    public async Task<IActionResult> AddAudioForStory([FromBody] UpdateAudioRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
+        UpdateStoryAudioCommand command = new()
+        {
+            UserId = new Guid(),
+            StoryId = request.StoryId,
+            Name = request.Name,
+            Audio = request.Audio
+        };
 
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        Guid newAudioId = Guid.NewGuid();
-        DateTimeOffset currentDate = DateTimeOffset.Now;
-        StoryAudio storyAudio = new(newAudioId, currentDate.Date, audio.Name);
-
-        SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + newAudioId + ".mp3");
-
-        int result = await _storyRepository.CreateAudio(storyAudio, user);
-        return Ok(result);
-    }
-
-    public static void SaveByteArrayToFileWithBinaryWriter(byte[] data, string filePath)
-    {
-        using BinaryWriter writer = new(System.IO.File.OpenWrite(filePath));
-        writer.Write(data);
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpPut("audio")]
-    public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudioRequest audio)
+    public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudioRequest request)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
+        UpdateStoryAudioCommand command = new()
+        {
+            UserId = new Guid(),
+            StoryId = request.StoryId,
+            Name = request.Name,
+            Audio = request.Audio
+        };
 
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        StoryAudio existingAudio = await _storyRepository.GetAudioById(audio.AudioId);
-
-        if (existingAudio is null)
-            return NotFound("Audio not found");
-
-        SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + existingAudio.FileId + ".mp3");
-
-        return Ok();
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 
     [HttpDelete("audio")]
-    public async Task<IActionResult> DeleteAudioForStory([FromBody] int[] audioIds)
+    public async Task<IActionResult> DeleteAudioForStory([FromBody] Guid storyId)
     {
-        UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
+        DeleteStoryAudioCommand command = new()
+        {
+            StoryId = storyId
+        };
 
-        if (user.Username is null)
-            return BadRequest("Token expired");
-
-        StoryAudio existingAudio = await _storyRepository.GetAudioById(audioIds[0]);
-
-        if (existingAudio is null)
-            return NotFound("Audio not found");
-
-        bool result = await _storyRepository.DeleteAudio(audioIds, user);
-
-        string path = "audios/" + existingAudio.FileId + ".mp3";
-
-        if (!result || !System.IO.File.Exists(path)) return NoContent();
-
-        System.IO.File.Delete(path);
-        return Ok();
-    }
-
-    private string GetCurrentUsername()
-    {
-        Claim usernameClaim = null;
-        if (HttpContext.User.Identity is ClaimsIdentity identity)
-            usernameClaim = identity.Claims.FirstOrDefault(c => c.Type == "username");
-
-        return usernameClaim?.Value;
-    }
-
-    private int GetCurrentId()
-    {
-        Claim usernameClaim = null;
-        if (HttpContext.User.Identity is ClaimsIdentity identity)
-            usernameClaim = identity.Claims.FirstOrDefault(c => c.Type == "id");
-        bool parsed = int.TryParse(usernameClaim?.Value, out int id);
-        return parsed ? id : -1;
-    }
-
-    private string GetCurrentHash()
-    {
-        Claim hashClaim = null;
-        if (HttpContext.User.Identity is ClaimsIdentity identity)
-            hashClaim = identity.Claims.FirstOrDefault(c => c.Type == "hash");
-
-        return hashClaim?.Value is null
-            ? null
-            : _encryptor.Decrypt(hashClaim.Value);
+        return (await _mediator.Send(command)).ToObjectResult();
     }
 }

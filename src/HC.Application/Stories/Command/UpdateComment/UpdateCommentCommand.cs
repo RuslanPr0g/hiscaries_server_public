@@ -1,13 +1,13 @@
-﻿using HC.Application.Models.Connection;
+﻿using HC.Application.Models.Response;
 using MediatR;
+using System;
 
 namespace HC.Application.Stories.Command;
 
-public class UpdateCommentCommand : IRequest<int>
+public class UpdateCommentCommand : IRequest<BaseResult>
 {
-    public UserConnection User { get; set; }
-    public int Id { get; set; }
-    public int StoryId { get; set; }
-    public int UserId { get; set; }
+    public Guid Id { get; set; }
+    public Guid StoryId { get; set; }
+    public Guid UserId { get; set; }
     public string Content { get; set; }
 }

@@ -8,7 +8,7 @@ using MediatR;
 
 namespace HC.Application.Stories.Command.BookmarkStory;
 
-internal class BookmarkStoryCommandHandler : IRequestHandler<BookmarkStoryCommand, PublishStoryResult>
+internal class BookmarkStoryCommandHandler : IRequestHandler<BookmarkStoryCommand, UpdateStoryInfoResult>
 {
     private readonly IStoryWriteService _storyService;
     private readonly IUserWriteService _userService;
@@ -19,7 +19,7 @@ internal class BookmarkStoryCommandHandler : IRequestHandler<BookmarkStoryComman
         _userService = userService;
     }
 
-    public async Task<PublishStoryResult> Handle(BookmarkStoryCommand request, CancellationToken cancellationToken)
+    public async Task<UpdateStoryInfoResult> Handle(BookmarkStoryCommand request, CancellationToken cancellationToken)
     {
         StoryBookMark bookMark = new StoryBookMark
         {

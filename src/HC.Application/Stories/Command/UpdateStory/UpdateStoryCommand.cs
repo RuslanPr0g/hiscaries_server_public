@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using HC.Application.Models.Connection;
-using HC.Application.Models.Response;
+﻿using HC.Application.Models.Response;
 using MediatR;
+using System;
+using System.Collections.Generic;
 
 namespace HC.Application.Stories.Command;
 
-public class UpdateStoryCommand : IRequest<PublishStoryResult>
+public class UpdateStoryCommand : IRequest<UpdateStoryInfoResult>
 {
-    public UserConnection User { get; set; }
+    public string Username { get; set; }
 
-    public int StoryId { get; set; }
+    public Guid StoryId { get; set; }
 
     public string Title { get; set; }
 
@@ -18,7 +17,7 @@ public class UpdateStoryCommand : IRequest<PublishStoryResult>
 
     public string AuthorName { get; set; }
 
-    public List<int> GenreIds { get; set; }
+    public IEnumerable<Guid> GenreIds { get; set; }
 
     public int AgeLimit { get; set; }
 

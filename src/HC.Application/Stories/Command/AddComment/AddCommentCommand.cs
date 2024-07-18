@@ -1,11 +1,15 @@
-﻿using HC.Application.Models.Connection;
-using HC.Domain.Story.Comment;
+﻿using HC.Application.Models.Response;
 using MediatR;
+using System;
 
 namespace HC.Application.Stories.Command;
 
-public class AddCommentCommand : IRequest<int>
+public class AddCommentCommand : IRequest<BaseResult>
 {
-    public UserConnection User { get; set; }
-    public Comment Comment { get; set; }
+    public string Username { get; init; }
+    public string Content { get; init; }
+    public DateTime CommentedAt { get; init; }
+    public int Score { get; init; }
+    public Guid StoryId { get; set; }
+    public Guid UserId { get; set; }
 }

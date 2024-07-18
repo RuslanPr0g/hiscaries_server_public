@@ -13,7 +13,8 @@ public sealed class StoryReadModel
     public DateTime DatePublished { get; set; }
     public DateTime DateWritten { get; set; }
     public UserReadModel Publisher { get; set; }
-    public List<GenreReadModel> Genres { get; set; }
+    public IEnumerable<GenreReadModel> Genres { get; set; }
+    public IEnumerable<StoryPageReadModel> Pages { get; set; }
     public double AverageScore { get; set; }
     public int CommentCount { get; set; }
     public int ReadCount { get; set; }

@@ -1,10 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using HC.Application.Interface;
-
 using MediatR;
 
-namespace HC.Application.Stories.DeleteStory;
+namespace HC.Application.Stories.Command.DeleteStory;
 
 public class DeleteStoryCommandHandler : IRequestHandler<DeleteStoryCommand, int>
 {

@@ -1,11 +1,8 @@
-﻿using System.Collections.Generic;
-using HC.Application.Models.Connection;
-
-using MediatR;
+﻿using MediatR;
+using System.Collections.Generic;
 
 namespace HC.Application.Stories.Query.GetGenreList;
 
-public class GetGenreListQuery : IRequest<List<Genre>>
+public sealed class GetGenreListQuery : IRequest<IEnumerable<GenreReadModel>>
 {
-    public UserConnection User { get; set; }
 }

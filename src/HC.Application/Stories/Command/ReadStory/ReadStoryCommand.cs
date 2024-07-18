@@ -1,12 +1,12 @@
-﻿using HC.Application.Models.Connection;
+﻿using HC.Application.Models.Response;
 using MediatR;
+using System;
 
 namespace HC.Application.Stories.Command.ReadStory;
 
-public class ReadStoryCommand : IRequest<int>
+public class ReadStoryCommand : IRequest<BaseResult>
 {
-    public UserConnection User { get; set; }
-    public int StoryId { get; set; }
-    public int UserId { get; set; }
+    public Guid StoryId { get; set; }
+    public Guid UserId { get; set; }
     public int Page { get; set; }
 }

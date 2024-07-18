@@ -2,7 +2,7 @@
 
 namespace HC.API.Requests;
 
-public class CreateCommentRequest
+public class UpdateCommentRequest
 {
     public Guid Id { get; set; }
     public Guid StoryId { get; set; }

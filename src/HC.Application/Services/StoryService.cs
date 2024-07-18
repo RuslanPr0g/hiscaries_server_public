@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -9,6 +11,10 @@ using HC.Application.Models.Response;
 
 using HC.Domain.Story;
 using HC.Domain.Story.Comment;
+using HC.Domain.Users;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace HC.Application.Services;
 
@@ -28,6 +34,54 @@ public class StoryService : IStoryWriteService
         return await _storyRepository.DeleteStory(story);
     }
 
+    //    Task<IEnumerable<StoryReadModel>> SearchForStory(GetStoryListQuery request);
+    //            if (!string.IsNullOrEmpty(searchRequest))
+    //            stories = stories.Where(s =>
+    //                s.Title.Contains(searchRequest, StringComparison.InvariantCultureIgnoreCase) ||
+    //                s.Description.Contains(searchRequest, StringComparison.InvariantCultureIgnoreCase)).ToList();
+
+
+    //        if (!string.IsNullOrEmpty(genreRequest))
+    //        {
+    //            List<StoryReadDto> sttoriesWithGenres = new List<StoryReadDto>();
+
+    //            foreach (StoryReadDto story in stories)
+    //            {
+    //                bool isAny = story.Genres.Any(x =>
+    //                    x.Name.Contains(genreRequest, StringComparison.InvariantCultureIgnoreCase)
+    //                    || x.Description.Contains(genreRequest, StringComparison.InvariantCultureIgnoreCase));
+
+    //                if (isAny) sttoriesWithGenres.Add(story);
+    //}
+
+    //stories = sttoriesWithGenres;
+    //        }
+
+
+
+
+
+
+
+    //[HttpGet("audio")]
+    //public async Task<IActionResult> GetAudioForStory([FromQuery] int storyId)
+    //{
+    //    UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
+
+    //    if (user.Username is null)
+    //        return BadRequest("Token expired");
+
+    //    List<StoryAudio> audioModels = await _storyRepository.GetAudio(storyId, user);
+    //    StoryAudio story = audioModels.FirstOrDefault();
+
+    //    byte[] result = await System.IO.File.ReadAllBytesAsync("audios/" + story?.FileId + ".mp3");
+
+    //    List<GetStoryFilesRequest> storyFilesRead = audioModels.Select(x =>
+    //        new GetStoryFiles(x.Id, x.FileId, x.DateAdded, x.Name, result)).ToList();
+
+    //    return Ok(storyFilesRead);
+    //}
+
     public async Task<List<StoryReadDto>> GetAllStories()
     {
         IReadOnlyCollection<Story> stories = await _storyRepository.GetStories();
@@ -40,10 +94,10 @@ public class StoryService : IStoryWriteService
         return await _storyRepository.GetStory(storyId);
     }
 
-    public async Task<PublishStoryResult> PublishStory(Story story)
+    public async Task<UpdateStoryInfoResult> PublishStory(Story story)
     {
         int publishedStoryId = await _storyRepository.AddStory(story);
-        return new PublishStoryResult(ResultStatus.Success, string.Empty, publishedStoryId);
+        return new UpdateStoryInfoResult(ResultStatus.Success, string.Empty, publishedStoryId);
     }
 
     public async Task AddImageToStory(int storyId, string imagePath)
@@ -101,7 +155,7 @@ public class StoryService : IStoryWriteService
         return reads;
     }
 
-    public async Task<PublishStoryResult> UpdateStory(Story story)
+    public async Task<UpdateStoryInfoResult> UpdateStory(Story story)
     {
         await _storyRepository.UpdateStory(story);
         return new PublishStoryResult(ResultStatus.Success, string.Empty, story.Id);
@@ -112,7 +166,7 @@ public class StoryService : IStoryWriteService
         return await _storyRepository.GetStoryBookMarks(userId);
     }
 
-    public async Task<PublishStoryResult> BookmarkStory(StoryBookMark bookMark)
+    public async Task<UpdateStoryInfoResult> BookmarkStory(StoryBookMark bookMark)
     {
         List<StoryBookMark> marks = await GetBookMarksAll();
         IEnumerable<StoryBookMark> marked = marks.Where(mark => mark.User.Id == bookMark.User.Id
@@ -148,6 +202,57 @@ public class StoryService : IStoryWriteService
     {
         return await _storyRepository.GetStoryScores();
     }
+
+    //[HttpPost("audio")]
+    //[AllowAnonymous]
+    //public async Task<IActionResult> AddAudioForStory([FromBody] CreateAudioModelRequest audio)
+    //{
+    //    Guid newAudioId = Guid.NewGuid();
+    //    DateTimeOffset currentDate = DateTimeOffset.Now;
+    //    StoryAudio storyAudio = new(newAudioId, currentDate.Date, audio.Name);
+
+    //    SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + newAudioId + ".mp3");
+
+    //    int result = await _storyRepository.CreateAudio(storyAudio, user);
+    //    return Ok(result);
+    //}
+
+    //public static void SaveByteArrayToFileWithBinaryWriter(byte[] data, string filePath)
+    //{
+    //    using BinaryWriter writer = new(System.IO.File.OpenWrite(filePath));
+    //    writer.Write(data);
+    //}
+
+    //[HttpPut("audio")]
+    //public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudioRequest audio)
+    //{
+    //    StoryAudio existingAudio = await _storyRepository.GetAudioById(audio.AudioId);
+
+    //    if (existingAudio is null)
+    //        return NotFound("Audio not found");
+
+    //    SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + existingAudio.FileId + ".mp3");
+
+    //    return Ok();
+    //}
+
+    //[HttpDelete("audio")]
+    //public async Task<IActionResult> DeleteAudioForStory([FromBody] int[] audioIds)
+    //{
+    //    StoryAudio existingAudio = await _storyRepository.GetAudioById(audioIds[0]);
+
+    //    if (existingAudio is null)
+    //        return NotFound("Audio not found");
+
+    //    bool result = await _storyRepository.DeleteAudio(audioIds, user);
+
+    //    string path = "audios/" + existingAudio.FileId + ".mp3";
+
+    //    if (!result || !System.IO.File.Exists(path)) return NoContent();
+
+    //    System.IO.File.Delete(path);
+    //    return Ok();
+    //}
 
     public async Task<List<StoryReadDto>> SetStoryInfo(List<StoryReadDto> storyReadDtos)
     {

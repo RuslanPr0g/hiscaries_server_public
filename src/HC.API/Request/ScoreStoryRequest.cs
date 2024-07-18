@@ -1,5 +1,7 @@
-﻿public class ScoreStoryRequest
+﻿using System;
+
+public class ScoreStoryRequest
 {
-    public string StoryId { get; set; }
+    public Guid StoryId { get; set; }
     public int Score { get; set; }
 }

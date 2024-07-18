@@ -1,5 +1,7 @@
-﻿public class ReadStoryRequest
+﻿using System;
+
+public class ReadStoryRequest
 {
-    public string StoryId { get; set; }
+    public Guid StoryId { get; set; }
     public int PageRead { get; set; }
 }

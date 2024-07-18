@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 public class StoryPagesCreateRequest
 {
-    public string StoryId { get; set; }
+    public Guid StoryId { get; set; }
 
     public IEnumerable<string> Content { get; set; }
 }

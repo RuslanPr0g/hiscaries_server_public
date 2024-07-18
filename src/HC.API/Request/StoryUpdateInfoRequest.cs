@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace HC.API.Requests;
 
-public class StoryCreateRequest
+public class StoryUpdateInfoRequest
 {
-    public string StoryId { get; set; }
+    public Guid? StoryId { get; set; }
 
     public string Title { get; set; }
 
@@ -13,7 +13,7 @@ public class StoryCreateRequest
 
     public string AuthorName { get; set; }
 
-    public IEnumerable<int> GenreIds { get; set; }
+    public IEnumerable<Guid> GenreIds { get; set; }
 
     public int AgeLimit { get; set; }
 
