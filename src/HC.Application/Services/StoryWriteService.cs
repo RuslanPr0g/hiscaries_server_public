@@ -4,6 +4,7 @@ using HC.Application.Stories.Command;
 using HC.Application.Stories.Command.DeleteStory;
 using HC.Application.Stories.Command.ReadStory;
 using HC.Application.Stories.Command.ScoreStory;
+using HC.Application.StoryPages.Command.CreateStoryPages;
 using HC.Domain.Stories;
 using System.Threading.Tasks;
 
@@ -79,7 +80,17 @@ public sealed class StoryWriteService : IStoryWriteService
         throw new System.NotImplementedException();
     }
 
+    public Task<BaseResult> UpdateComment(UpdateCommentCommand request)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public Task<BaseResult> UpdateGenre(UpdateGenreCommand request)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public Task<AddStoryPageResult> UpdatePages(UpdateStoryPagesCommand request)
     {
         throw new System.NotImplementedException();
     }

@@ -1,8 +1,8 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using HC.Application.Interface;
+﻿using HC.Application.Interface;
 using HC.Application.Models.Response;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HC.Application.Users.Command.LoginUser;
 
@@ -17,6 +17,6 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUs
 
     public async Task<LoginUserResult> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
-        return await _userService.LoginUser(request.Username, request.Password);
+        return await _userService.LoginUser(request);
     }
 }

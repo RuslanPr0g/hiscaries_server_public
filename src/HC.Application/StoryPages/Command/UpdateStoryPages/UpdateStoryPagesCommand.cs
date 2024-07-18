@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace HC.Application.StoryPages.Command.CreateStoryPages;
 
-public class CreateStoryPagesCommand : IRequest<AddStoryPageResult>
+public class UpdateStoryPagesCommand : IRequest<AddStoryPageResult>
 {
     public Guid StoryId { get; set; }
     public IEnumerable<string> Content { get; set; }

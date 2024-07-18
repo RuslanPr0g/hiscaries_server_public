@@ -1,7 +1,7 @@
-using System;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using System;
 
 namespace HC.API;
 
@@ -12,12 +12,6 @@ public class Program
         try
         {
             using IHost host = CreateHostBuilder(args).Build();
-            // Migrate on startup
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    var db = scope.ServiceProvider.GetRequiredService<HiscaryContext>();
-            //    db.Database.Migrate();
-            //}
             host.Run();
         }
         catch (Exception ex)
@@ -42,15 +36,7 @@ public class Program
         return builder.ConfigureWebHostDefaults(webBuilder =>
         {
             webBuilder
-                .UseStartup<Startup>()
-                .UseSerilog((hostingContext, loggerConfiguration) =>
-                {
-                    loggerConfiguration
-                        .ReadFrom.Configuration(hostingContext.Configuration)
-                        .Enrich.FromLogContext()
-                        .Enrich.WithProperty("ApplicationName", typeof(Program).Assembly.GetName().Name)
-                        .Enrich.WithProperty("Environment", hostingContext.HostingEnvironment);
-                });
+                .UseStartup<Startup>();
         });
     }
 }

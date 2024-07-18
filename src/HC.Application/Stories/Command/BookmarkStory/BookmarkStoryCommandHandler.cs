@@ -1,14 +1,12 @@
-﻿using System;
+﻿using HC.Application.Interface;
+using HC.Application.Models.Response;
+using MediatR;
 using System.Threading;
 using System.Threading.Tasks;
-using HC.Application.Interface;
-using HC.Application.Models.Response;
-using HC.Domain.Story;
-using MediatR;
 
 namespace HC.Application.Stories.Command.BookmarkStory;
 
-internal class BookmarkStoryCommandHandler : IRequestHandler<BookmarkStoryCommand, UpdateStoryInfoResult>
+internal class BookmarkStoryCommandHandler : IRequestHandler<BookmarkStoryCommand, BaseResult>
 {
     private readonly IStoryWriteService _storyService;
     private readonly IUserWriteService _userService;
@@ -19,21 +17,8 @@ internal class BookmarkStoryCommandHandler : IRequestHandler<BookmarkStoryComman
         _userService = userService;
     }
 
-    public async Task<UpdateStoryInfoResult> Handle(BookmarkStoryCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResult> Handle(BookmarkStoryCommand request, CancellationToken cancellationToken)
     {
-        StoryBookMark bookMark = new StoryBookMark
-        {
-            User = new User
-            {
-                Id = request.UserId
-            },
-            Story = new Story
-            {
-                Id = request.StoryId
-            },
-            DateAdded = DateTime.Now
-        };
-
-        return await _storyService.BookmarkStory(bookMark, request.User);
+        return await _storyService.BookmarkStory(request);
     }
 }

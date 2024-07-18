@@ -1,11 +1,12 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using HC.Application.Interface;
+﻿using HC.Application.Interface;
+using HC.Application.Models.Response;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HC.Application.Stories.Command.DeleteStory;
 
-public class DeleteStoryCommandHandler : IRequestHandler<DeleteStoryCommand, int>
+public class DeleteStoryCommandHandler : IRequestHandler<DeleteStoryCommand, BaseResult>
 {
     private readonly IStoryWriteService _storyService;
 
@@ -14,8 +15,8 @@ public class DeleteStoryCommandHandler : IRequestHandler<DeleteStoryCommand, int
         _storyService = storyService;
     }
 
-    public async Task<int> Handle(DeleteStoryCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResult> Handle(DeleteStoryCommand request, CancellationToken cancellationToken)
     {
-        return await _storyService.DeleteStory(new Story { Id = request.StoryId }, request.User);
+        return await _storyService.DeleteStory(request);
     }
 }

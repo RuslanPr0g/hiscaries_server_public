@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
 
 namespace HC.API;
 
@@ -26,6 +27,8 @@ public class Startup
         services.AddDataAccess(Configuration);
 
         services.AddServicesServices();
+
+        services.AddSerilog();
 
         services.AddMediatR((cfg) =>
         {
@@ -72,6 +75,8 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "HC.API v1"));
         }
+
+        app.UseSerilogRequestLogging();
 
         app.UseHttpsRedirection();
 

@@ -23,6 +23,13 @@ public static class DataAccessServiceConfiguration
             options.UseNpgsql(mainConnectionString, b => { b.MigrationsAssembly("HC.Infrastructure"); });
         });
 
+        // Migrate on startup
+        //using (var scope = host.Services.CreateScope())
+        //{
+        //    var db = scope.ServiceProvider.GetRequiredService<HiscaryContext>();
+        //    db.Database.Migrate();
+        //}
+
         return services;
     }
 }

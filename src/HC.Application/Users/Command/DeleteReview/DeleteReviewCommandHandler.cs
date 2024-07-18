@@ -1,8 +1,8 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using HC.Application.Interface;
+﻿using HC.Application.Interface;
 using HC.Application.Models.Response;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace HC.Application.Users.Command;
 
@@ -17,7 +17,6 @@ public class DeleteReviewCommandHandler : IRequestHandler<DeleteReviewCommand, B
 
     public async Task<BaseResult> Handle(DeleteReviewCommand request, CancellationToken cancellationToken)
     {
-        await _userService.DeleteReview(new Review { Id = request.Id }, request.User);
-        return 1;
+        return await _userService.DeleteReview(request);
     }
 }

@@ -206,7 +206,7 @@ public class StoryV1Controller : ControllerBase
     [HttpPost(APIConstants.Pages)]
     public async Task<IActionResult> UpdatePages([FromBody] StoryPagesCreateRequest request)
     {
-        CreateStoryPagesCommand command = new()
+        UpdateStoryPagesCommand command = new()
         {
             StoryId = request.StoryId,
             Content = request.Content
