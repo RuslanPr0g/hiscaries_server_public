@@ -60,14 +60,28 @@ public sealed class UserWriteService : IUserWriteService
         return BaseResult.CreateSuccess();
     }
 
-    public Task<User> GetUserById(UserId userId)
+    public async Task<BaseResult<User>> GetUserById(UserId userId)
     {
-        throw new System.NotImplementedException();
+        User? user = await _repository.GetUserById(userId);
+
+        if (user is null)
+        {
+            return BaseResult<User>.CreateFail(UserFriendlyMessages.UserIsNotFound);
+        }
+
+        return BaseResult<User>.CreateSuccess(user);
     }
 
-    public Task<User> GetUserByUsername(string username)
+    public async Task<BaseResult<User>> GetUserByUsername(string username)
     {
-        throw new System.NotImplementedException();
+        User? user = await _repository.GetUserByUsername(username);
+
+        if (user is null)
+        {
+            return BaseResult<User>.CreateFail(UserFriendlyMessages.UserIsNotFound);
+        }
+
+        return BaseResult<User>.CreateSuccess(user);
     }
 
     public Task<LoginUserResult> LoginUser(LoginUserCommand command)

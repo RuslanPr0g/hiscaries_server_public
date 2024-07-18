@@ -10,8 +10,8 @@ namespace HC.Application.Interface;
 
 public interface IUserWriteService
 {
-    Task<User> GetUserById(UserId userId);
-    Task<User> GetUserByUsername(string username);
+    Task<BaseResult<User>> GetUserById(UserId userId);
+    Task<BaseResult<User>> GetUserByUsername(string username);
     Task<BaseResult> BecomePublisher(string username);
 
     Task<UserWithTokenResult> RegisterUser(RegisterUserCommand command);

@@ -13,9 +13,18 @@ public record BaseResult(ResultStatus ResultStatus, string? FailReason = null)
     {
         return new BaseResult(ResultStatus.Fail, reason);
     }
+}
 
-    internal static BaseResult CreateFail(object userWasNotFound)
+public record BaseResult<T>(ResultStatus ResultStatus, T? Value, string? FailReason = null)
+    where T : class
+{
+    public static BaseResult<T> CreateSuccess(T value)
     {
-        throw new NotImplementedException();
+        return new BaseResult<T>(ResultStatus.Success, value);
+    }
+
+    public static BaseResult<T> CreateFail(string reason)
+    {
+        return new BaseResult<T>(ResultStatus.Fail, default, reason);
     }
 }
