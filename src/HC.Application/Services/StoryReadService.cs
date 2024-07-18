@@ -6,23 +6,20 @@ using System.Threading.Tasks;
 
 public sealed class StoryReadService : IStoryReadService
 {
-    public Task<IEnumerable<GenreReadModel>> GetAllGenres()
+    private readonly IStoryReadRepository _repository;
+
+    public StoryReadService(IStoryReadRepository repository)
     {
-        throw new System.NotImplementedException();
+        _repository = repository;
     }
 
-    public Task<StoryReadModel> GetStoryById(StoryId storyId)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<IEnumerable<GenreReadModel>> GetAllGenres() => await _repository.GetAllGenres();
 
-    public Task<IEnumerable<StorySimpleReadModel>> GetStoryRecommendations(GetStoryRecommendationsQuery request)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<StoryReadModel> GetStoryById(StoryId storyId) => await _repository.GetStory(storyId);
 
-    public Task<IEnumerable<StorySimpleReadModel>> SearchForStory(GetStoryListQuery request)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<IEnumerable<StorySimpleReadModel>> GetStoryRecommendations(GetStoryRecommendationsQuery request) =>
+        await _repository.GetStoryRecommendations(request.Username);
+
+    public async Task<IEnumerable<StorySimpleReadModel>> SearchForStory(GetStoryListQuery request) =>
+        await _repository.GetStoriesBy(request.SearchTerm, request.Genre);
 }

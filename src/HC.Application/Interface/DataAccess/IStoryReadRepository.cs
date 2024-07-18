@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using HC.Domain.Stories;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HC.Application.Interface;
 
 public interface IStoryReadRepository
 {
-    Task<IReadOnlyCollection<StoryReadModel>> GetStories();
-    Task<StoryReadModel> GetStory(int storyId);
-    Task<List<GenreReadModel>> GetGenres();
+    Task<IEnumerable<StorySimpleReadModel>> GetStories();
+    Task<IEnumerable<StorySimpleReadModel>> GetStoriesBy(string searchTerm, string genre);
+    Task<IEnumerable<StorySimpleReadModel>> GetStoryRecommendations(string username);
+    Task<StoryReadModel> GetStory(StoryId storyId);
+    Task<List<GenreReadModel>> GetAllGenres();
 }
