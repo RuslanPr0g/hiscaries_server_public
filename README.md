@@ -4,6 +4,7 @@
 # Refactoring plan
 - refactor domain to include domain methods
 - refactor API controllers to use only mediator LOGIC
+- add entity configuration for persistence layer EF core
 - refactor mediator commands and queries to use service interfaces properly
 - refactor application layer, separate it into read and write, where read would be dapper with read models (views in the db), and write as EF CORE with change tracker and strict transactional bound within one aggregate root.
 - implement the application read and write layers for all the interface contacts

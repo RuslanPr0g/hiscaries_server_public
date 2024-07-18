@@ -8,9 +8,10 @@ public static class ServicesConfiguration
 {
     public static IServiceCollection AddServicesServices(this IServiceCollection services)
     {
-        services.AddScoped<IUserWriteService, UserService>();
-        services.AddScoped<IStoryWriteService, StoryService>();
-        services.AddScoped<IStoryPageService, StoryPageService>();
+        services.AddScoped<IUserWriteService, UserWriteService>();
+        services.AddScoped<IStoryWriteService, StoryWriteService>();
+        services.AddScoped<IUserReadService, UserReadService>();
+        services.AddScoped<IStoryReadService, StoryReadService>();
         return services;
     }
 }
