@@ -10,7 +10,7 @@ public interface IUserWriteRepository
     Task<string> GetUserRoleByUsername(string username);
     Task<int> AddUserAndRole(User user);
     Task BecomePublisher(string username);
-    Task InsertRefreshToken(RefreshToken refreshToken);
+    Task UpdateRefreshToken(RefreshToken refreshToken);
     Task<RefreshToken> GetRefreshToken(string refreshToken);
     Task DeleteReview(Review review);
 }

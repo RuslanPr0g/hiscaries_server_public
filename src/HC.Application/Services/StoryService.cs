@@ -1,24 +1,4 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.IO;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using AutoMapper;
-//using HC.Application.DTOs;
-//using HC.Application.Helpers;
-//using HC.Application.Interface;
-//using HC.Application.Models.Response;
-
-//using HC.Domain.Story;
-//using HC.Domain.Story.Comment;
-//using HC.Domain.Users;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Mvc;
-//using static System.Runtime.InteropServices.JavaScript.JSType;
-
-//namespace HC.Application.Services;
-
-//public class StoryService : IStoryWriteService
+﻿//public class StoryService : IStoryWriteService
 //{
 //    private readonly IMapper _mapper;
 //    private readonly IStoryWriteRepository _storyRepository;
@@ -57,12 +37,6 @@
 //    //stories = sttoriesWithGenres;
 //    //        }
 
-
-
-
-
-
-
 //    //[HttpGet("audio")]
 //    //public async Task<IActionResult> GetAudioForStory([FromQuery] int storyId)
 //    //{
@@ -82,24 +56,6 @@
 //    //    return Ok(storyFilesRead);
 //    //}
 
-//    public async Task<List<StoryReadDto>> GetAllStories()
-//    {
-//        IReadOnlyCollection<Story> stories = await _storyRepository.GetStories();
-//        List<StoryReadDto> mappedStories = _mapper.Map<List<StoryReadDto>>(stories);
-//        return await SetStoryInfo(mappedStories);
-//    }
-
-//    public async Task<Story> GetStoryById(int storyId)
-//    {
-//        return await _storyRepository.GetStory(storyId);
-//    }
-
-//    public async Task<UpdateStoryInfoResult> PublishStory(Story story)
-//    {
-//        int publishedStoryId = await _storyRepository.AddStory(story);
-//        return new UpdateStoryInfoResult(ResultStatus.Success, string.Empty, publishedStoryId);
-//    }
-
 //    public async Task AddImageToStory(int storyId, string imagePath)
 //    {
 //        Story story = await _storyRepository.GetStory(storyId);
@@ -112,95 +68,6 @@
 //        Story story = await _storyRepository.GetStory(storyId);
 //        story.SetImage(base64);
 //        await _storyRepository.UpdateStory(story);
-//    }
-
-//    public async Task<int> ReadStoryHistory(StoryReadHistory story)
-//    {
-//        List<StoryReadHistory> reads = await _storyRepository.GetStoryReadHistory();
-//        IEnumerable<StoryReadHistory> exists = reads.Where(x => x.Story.Id == story.Story.Id
-//                                                                && x.User.Id == story.User.Id
-//                                                                && x.PageRead == story.PageRead);
-//        if (exists.Any()) return 1;
-//        return await _storyRepository.ReadStoryHistory(story);
-//    }
-
-//    public async Task<List<Genre>> GetBookMarks()
-//    {
-//        return await _storyRepository.GetGenres();
-//    }
-
-//    public async Task<List<StoryRating>> GetScores()
-//    {
-//        return await _storyRepository.GetStoryScores();
-//    }
-
-//    public async Task UpdateStoryScore(StoryRating storyScore)
-//    {
-//        await _storyRepository.UpdateStoryScore(storyScore);
-//    }
-
-//    public async Task AddStoryScore(StoryRating storyScore)
-//    {
-//        await _storyRepository.InsertStoryScore(storyScore);
-//    }
-
-//    public async Task<List<StoryReadHistoryProgress>> GetHistory(int userId)
-//    {
-//        List<StoryReadHistoryProgress> reads = await _storyRepository.GetStoryReadHistoryProgress(userId);
-//        foreach (StoryReadHistoryProgress read in reads)
-//            if (read.Total != 0)
-//                read.UpdatePercentage(read.Count / (double)read.Total);
-//            else
-//                read.UpdatePercentage(1);
-//        return reads;
-//    }
-
-//    public async Task<UpdateStoryInfoResult> UpdateStory(Story story)
-//    {
-//        await _storyRepository.UpdateStory(story);
-//        return new PublishStoryResult(ResultStatus.Success, string.Empty, story.Id);
-//    }
-
-//    public async Task<List<Story>> GetStoryBookMarksByUserId(int userId)
-//    {
-//        return await _storyRepository.GetStoryBookMarks(userId);
-//    }
-
-//    public async Task<UpdateStoryInfoResult> BookmarkStory(StoryBookMark bookMark)
-//    {
-//        List<StoryBookMark> marks = await GetBookMarksAll();
-//        IEnumerable<StoryBookMark> marked = marks.Where(mark => mark.User.Id == bookMark.User.Id
-//                                                                && mark.Story.Id == bookMark.Story.Id);
-//        if (marked.Any())
-//            await _storyRepository.UnBookMarkStory(bookMark);
-//        else
-//            await _storyRepository.BookMarkStory(bookMark);
-//        return new PublishStoryResult(ResultStatus.Success, string.Empty, bookMark.Story.Id);
-//    }
-
-//    public async Task<int> AddComment(Comment comment)
-//    {
-//        return await _storyRepository.AddStoryComment(comment);
-//    }
-
-//    public async Task<int> UpdateComment(Comment comment)
-//    {
-//        return await _storyRepository.UpdateStoryComment(comment);
-//    }
-
-//    public async Task<int> DeleteComment(Comment comment)
-//    {
-//        return await _storyRepository.DeleteStoryComment(comment);
-//    }
-
-//    public async Task<List<Comment>> GetAllComments()
-//    {
-//        return await _storyRepository.GetStoryComments();
-//    }
-
-//    public async Task<List<StoryRating>> GetStoryScores()
-//    {
-//        return await _storyRepository.GetStoryScores();
 //    }
 
 //    //[HttpPost("audio")]
@@ -283,8 +150,4 @@
 //        return storyReadDtos;
 //    }
 
-//    public async Task<List<StoryBookMark>> GetBookMarksAll()
-//    {
-//        return await _storyRepository.GetBookMarks();
-//    }
 //}

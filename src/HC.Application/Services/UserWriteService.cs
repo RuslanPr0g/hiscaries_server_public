@@ -1,10 +1,16 @@
 ﻿using HC.Application.Interface;
 using HC.Application.Models.Response;
+using HC.Application.Options;
 using HC.Application.Users.Command;
 using HC.Application.Users.Command.LoginUser;
 using HC.Application.Users.Command.PublishReview;
 using HC.Application.Users.Command.RefreshToken;
 using HC.Domain.Users;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace HC.Application.Services;
@@ -12,10 +18,17 @@ namespace HC.Application.Services;
 public sealed class UserWriteService : IUserWriteService
 {
     private readonly IUserWriteRepository _repository;
+    private readonly JwtSettings _jwtSettings;
+    private readonly TokenValidationParameters _tokenValidationParameters;
 
-    public UserWriteService(IUserWriteRepository repository)
+    public UserWriteService(
+        IUserWriteRepository repository,
+        JwtSettings jwtSettings,
+        TokenValidationParameters tokenValidationParameters)
     {
         _repository = repository;
+        _jwtSettings = jwtSettings;
+        _tokenValidationParameters = tokenValidationParameters;
     }
 
     public async Task<BaseResult> BecomePublisher(string username)
@@ -63,5 +76,70 @@ public sealed class UserWriteService : IUserWriteService
     public Task<BaseResult> UpdateUserData(UpdateUserDataCommand command)
     {
         throw new System.NotImplementedException();
+    }
+
+    private ClaimsPrincipal GetClaimsPrincipalFromToken(string token)
+    {
+        JwtSecurityTokenHandler tokenHandler = new();
+
+        try
+        {
+            ClaimsPrincipal principal =
+                tokenHandler.ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
+
+            return !IsJwtWithValidSecurityAlgorithm(validatedToken) ? null : principal;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    private static bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
+    {
+        return validatedToken is JwtSecurityToken jwtSecurityToken &&
+               jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+                   StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    private async Task<(string, string)> GenerateJwtToken(User user)
+    {
+        JwtSecurityTokenHandler tokenHandler = new();
+        byte[] key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
+        string jti = Guid.NewGuid().ToString();
+        SecurityTokenDescriptor tokenDescriptor = new()
+        {
+            Subject = new ClaimsIdentity(new[]
+            {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+                    new Claim(JwtRegisteredClaimNames.Jti, jti),
+                    new Claim(JwtRegisteredClaimNames.Email, user.Username),
+                    new Claim("id", user.Id.ToString()),
+                    new Claim("username", user.Username),
+                    new Claim("hash", user.Password)
+                }),
+            Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifeTime),
+            SigningCredentials =
+                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+
+        SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+
+        RefreshToken refreshToken = new(
+            new RefreshTokenId(Guid.NewGuid()),
+            token.Id,
+            jti,
+            DateTime.UtcNow,
+            DateTime.UtcNow.AddMonths(6),
+            false,
+            false);
+
+        await _repository.UpdateRefreshToken(refreshToken);
+        return (tokenHandler.WriteToken(token), refreshToken.Token);
+    }
+
+    private static string HashPassword(string password)
+    {
+        return BCrypt.Net.BCrypt.HashPassword(password);
     }
 }

@@ -49,7 +49,7 @@ public class EFUserWriteRepository : IUserWriteRepository
         throw new System.NotImplementedException();
     }
 
-    public Task InsertRefreshToken(RefreshToken refreshToken)
+    public Task UpdateRefreshToken(RefreshToken refreshToken)
     {
         throw new System.NotImplementedException();
     }
