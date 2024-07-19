@@ -25,3 +25,7 @@ https://github.com/RuslanPr0g/Hiscary-WebsiteClient apps would be refactored to 
 - add specification pattern to the repositories
 - add domain events, etc.
 - fix TODOs
+
+### In the future
+Create a separate module/system/microservice that will be using an ML/AI to generate stories, not only that, but also
+AI will simulate user activity in the entire system, such that we can improve upon logging, metrics, etc.
