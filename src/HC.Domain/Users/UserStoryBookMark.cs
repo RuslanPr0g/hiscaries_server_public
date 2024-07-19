@@ -1,12 +1,12 @@
-﻿using HC.Domain.Users;
+﻿using HC.Domain.Stories;
 using System;
 
-namespace HC.Domain.Stories;
+namespace HC.Domain.Users;
 
-public sealed class StoryBookMark : Entity<StoryBookMarkId>
+public sealed class UserStoryBookMark : Entity<UserStoryBookMarkId>
 {
-    public StoryBookMark(
-        StoryBookMarkId id,
+    public UserStoryBookMark(
+        UserStoryBookMarkId id,
         UserId user,
         StoryId story,
         DateTime dateAdded) : base(id)
@@ -21,7 +21,7 @@ public sealed class StoryBookMark : Entity<StoryBookMarkId>
     public StoryId StoryId { get; init; }
     public DateTime CreatedAt { get; init; }
 
-    private StoryBookMark()
+    private UserStoryBookMark()
     {
     }
 }

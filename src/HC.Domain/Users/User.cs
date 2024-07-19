@@ -40,6 +40,7 @@ public sealed class User : AggregateRoot<UserId>
 
     public ICollection<Review> Reviews { get; }
     public ICollection<UserReadHistory> ReadHistory { get; }
+    public ICollection<UserStoryBookMark> BookMarks { get; }
 
     public void ReadStoryPage(StoryId storyId, int page, DateTime readDate, UserReadHistoryId generatedHistoryPageId)
     {
@@ -146,6 +147,14 @@ public sealed class User : AggregateRoot<UserId>
     public void UpdatePassword(string password)
     {
         Password = password;
+    }
+
+    public void BookmarkStory(UserStoryBookMarkId id, StoryId storyId, DateTime updatedAt)
+    {
+        if (!BookMarks.Any(x => x.StoryId == storyId))
+        {
+            BookMarks.Add(new UserStoryBookMark(id, Id, storyId, updatedAt));
+        }
     }
 
     private User()

@@ -40,6 +40,41 @@ public sealed class UserWriteService : IUserWriteService
         _tokenHandler = tokenHandler;
     }
 
+    public async Task<BaseResult> BookmarkStory(BookmarkStoryCommand command)
+    {
+        User? user = await _repository.GetUserById(command.UserId);
+
+        if (user is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.UserIsNotFound);
+        }
+
+        user.BookmarkStory(
+            _idGenerator.Generate((id) => new UserStoryBookMarkId(id)),
+            command.StoryId,
+            DateTime.UtcNow);
+
+        return BaseResult.CreateSuccess();
+    }
+
+    public async Task<BaseResult> ReadStoryHistory(ReadStoryCommand command)
+    {
+        User? user = await _repository.GetUserById(command.UserId);
+
+        if (user is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.UserIsNotFound);
+        }
+
+        user.ReadStoryPage(
+            command.StoryId,
+            command.Page,
+            DateTime.UtcNow,
+            _idGenerator.Generate((id) => new UserReadHistoryId(id)));
+
+        return BaseResult.CreateSuccess();
+    }
+
     public async Task<BaseResult> BecomePublisher(string username)
     {
         User? user = await _repository.GetUserByUsername(username);
@@ -309,15 +344,5 @@ public sealed class UserWriteService : IUserWriteService
     private static string HashPassword(string password, string salt)
     {
         return BCrypt.Net.BCrypt.HashPassword(password, salt);
-    }
-
-    public Task<BaseResult> BookmarkStory(BookmarkStoryCommand command)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task<BaseResult> ReadStoryHistory(ReadStoryCommand command)
-    {
-        throw new NotImplementedException();
     }
 }
