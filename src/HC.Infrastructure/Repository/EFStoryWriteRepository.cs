@@ -1,6 +1,7 @@
 ﻿using HC.Application.Interface;
 using HC.Domain.Stories;
 using HC.Infrastructure.DataAccess;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace HC.Infrastructure.Repository;
@@ -14,18 +15,12 @@ public sealed class EFStoryWriteRepository : IStoryWriteRepository
         _context = context;
     }
 
-    public Task<int> AddStory(Story story)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task AddStory(Story story) =>
+        await _context.Stories.AddAsync(story);
 
-    public Task<int> DeleteStory(StoryId storyId)
-    {
-        throw new System.NotImplementedException();
-    }
+    public void DeleteStory(Story story) =>
+        _context.Stories.Remove(story);
 
-    public Task<Story> GetStory(StoryId storyId)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<Story?> GetStory(StoryId storyId) =>
+        await _context.Stories.FirstOrDefaultAsync(x => x.Id == storyId);
 }
