@@ -1,4 +1,5 @@
 using FluentValidation.AspNetCore;
+using HC.Application;
 using HC.Application.Common.Extentions;
 using HC.Application.Filters;
 using HC.Application.Options;

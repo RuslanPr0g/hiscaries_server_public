@@ -13,18 +13,15 @@ public sealed class User : AggregateRoot<UserId>
         string email,
         string password,
         DateTime accountCreated,
-        DateTime birthDate,
-        bool banned,
-        RefreshTokenId refreshTokenId) : base(id)
+        DateTime birthDate) : base(id)
     {
         Username = username;
         Email = email;
         Password = password;
         AccountCreated = accountCreated;
         BirthDate = birthDate;
-        Banned = banned;
-        RefreshTokenId = refreshTokenId;
 
+        Banned = false;
         Role = new UserRole(UserRole.UserRoleEnum.Reader);
     }
 
@@ -38,11 +35,9 @@ public sealed class User : AggregateRoot<UserId>
     public UserRole Role { get; private set; }
 
     public RefreshTokenId RefreshTokenId { get; init; }
-    public RefreshToken RefreshToken { get; init; }
+    public RefreshToken RefreshToken { get; private set; }
 
     public ICollection<Review> Reviews { get; }
-
-    // TODO: "Your cannot review your profile!"
 
     public void BecomePublisher()
     {
@@ -62,6 +57,42 @@ public sealed class User : AggregateRoot<UserId>
             {
                 Reviews.Remove(review);
             }
+        }
+    }
+
+    public void PublishNewReview(UserId publisherId, string? message, ReviewId id)
+    {
+        RePublishReview(publisherId, message, id);
+    }
+
+    public void RePublishReview(UserId publisherId, string? message, ReviewId id)
+    {
+        if (!string.IsNullOrEmpty(message) && Reviews.Count > 0 && publisherId != Id)
+        {
+            var review = Reviews.FirstOrDefault(x => x.Id == id);
+
+            if (review is null)
+            {
+                Reviews.Add(
+                    new Review(
+                        id, publisherId, Id, message, Username));
+            }
+            else
+            {
+                review.Edit(message);
+            }
+        }
+    }
+
+    public void UpdateRefreshToken(RefreshToken refreshToken)
+    {
+        if (RefreshToken is not null)
+        {
+            RefreshToken.Refresh(refreshToken);
+        }
+        else
+        {
+            RefreshToken = new RefreshToken(refreshToken);
         }
     }
 

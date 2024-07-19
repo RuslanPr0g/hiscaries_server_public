@@ -1,26 +1,38 @@
-﻿namespace HC.Domain.Users;
+﻿using System;
+
+namespace HC.Domain.Users;
 
 public sealed class Review : Entity<ReviewId>
 {
     public Review(
         ReviewId id,
-        User publisher,
-        User reviewer,
+        UserId publisher,
+        UserId reviewer,
         string message,
         string username) : base(id)
     {
-        Publisher = publisher;
-        Reviewer = reviewer;
+        PublisherId = publisher;
+        ReviewerId = reviewer;
         Message = message;
         Username = username;
     }
 
     public User Publisher { get; init; }
     public User Reviewer { get; init; }
-    public string Message { get; init; }
+    public UserId PublisherId { get; init; }
+    public UserId ReviewerId { get; init; }
+    public string Message { get; private set; }
     public string Username { get; init; }
 
     private Review()
     {
+    }
+
+    internal void Edit(string message)
+    {
+        if (!string.IsNullOrEmpty(message))
+        {
+            Message = message;
+        }
     }
 }

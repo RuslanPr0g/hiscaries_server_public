@@ -51,50 +51,8 @@
 
 // return updateUserDataResult;
 
-//    public async Task<UserWithTokenResult> RegisterUser(User user)
-//    {
-//        User userExists = await GetUserByUsername(user.Username);
 
-//        IList<User> users = await GetAllUsers();
 
-//        if (userExists is not null)
-//            return new UserWithTokenResult(ResultStatus.Fail, "User with this username already exist", null, null);
-
-//        if (users.Any(u => u.Email == user.Email))
-//            return new UserWithTokenResult(ResultStatus.Fail, "Email already exists.", null, null);
-
-//        int id = await _userRepository.AddUser(user);
-//        user.Id = id;
-//        await _userRepository.AddUserRoleLogin(user);
-
-//        string encryptedpassword = _encryptor.Encrypt(user.Password);
-
-//        user = await _userRepository.GetUserByUsername(user.Username);
-//        user.Password = encryptedpassword;
-
-//        (string generatedToken, string generatedRefreshToken) = await GenerateJwtToken(user);
-
-//        return new UserWithTokenResult(ResultStatus.Success, string.Empty, generatedToken, generatedRefreshToken);
-//    }
-
-//    public async Task<LoginUserResult> LoginUser(string username, string password)
-//    {
-//        bool succeed = await _userRepository.VerifyConnection();
-
-//        if (succeed is false)
-//            return new LoginUserResult(ResultStatus.Fail, "Username or password are wrong", string.Empty, string.Empty);
-
-//        User user = await GetUserByUsername(username);
-
-//        if (user.Banned)
-//            return new LoginUserResult(ResultStatus.Fail, "This account is blocked.", string.Empty, string.Empty);
-
-//        user.Password = _encryptor.Encrypt(password);
-
-//        (string generatedToken, string generatedRefreshToken) = await GenerateJwtToken(user);
-
-//        return new LoginUserResult(ResultStatus.Success, string.Empty, generatedToken, generatedRefreshToken);
-//    }
 
 //    public async Task<RefreshTokenResponse> RefreshToken(string token, string refreshToken)
 //    {

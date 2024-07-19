@@ -82,7 +82,7 @@ public class UserV1Controller : ControllerBase
     {
         PublishReviewCommand query = new()
         {
-            Id = request.Id,
+            ReviewId = request.Id,
             PublisherId = request.PublisherId,
             ReviewerId = request.ReviewerId,
             Message = request.Message
@@ -151,7 +151,7 @@ public class UserV1Controller : ControllerBase
             Password = request.Password
         };
 
-        LoginUserResult result = await _mediator.Send(command);
+        UserWithTokenResult result = await _mediator.Send(command);
 
         return Ok(new
         {

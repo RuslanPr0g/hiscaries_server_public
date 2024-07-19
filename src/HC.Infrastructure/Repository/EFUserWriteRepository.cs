@@ -14,7 +14,7 @@ public class EFUserWriteRepository : IUserWriteRepository
         _context = context;
     }
 
-    public Task<int> AddUserAndRole(User user)
+    public Task<int> AddUser(User user)
     {
         throw new System.NotImplementedException();
     }

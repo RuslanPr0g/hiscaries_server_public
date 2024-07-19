@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HC.Application.Users.Command.LoginUser;
 
-public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUserResult>
+public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, UserWithTokenResult>
 {
     private readonly IUserWriteService _userService;
 
@@ -15,7 +15,7 @@ public class LoginUserCommandHandler : IRequestHandler<LoginUserCommand, LoginUs
         _userService = userService;
     }
 
-    public async Task<LoginUserResult> Handle(LoginUserCommand request, CancellationToken cancellationToken)
+    public async Task<UserWithTokenResult> Handle(LoginUserCommand request, CancellationToken cancellationToken)
     {
         return await _userService.LoginUser(request);
     }

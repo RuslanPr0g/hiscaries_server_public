@@ -15,7 +15,7 @@ public interface IUserWriteService
     Task<BaseResult> BecomePublisher(string username);
 
     Task<UserWithTokenResult> RegisterUser(RegisterUserCommand command);
-    Task<LoginUserResult> LoginUser(LoginUserCommand command);
+    Task<UserWithTokenResult> LoginUser(LoginUserCommand command);
 
     Task<BaseResult> PublishReview(PublishReviewCommand command);
     Task<BaseResult> DeleteReview(DeleteReviewCommand command);
