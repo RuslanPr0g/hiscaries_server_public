@@ -1,6 +1,7 @@
 ﻿using HC.Application.Interface;
 using HC.Domain.Users;
 using HC.Infrastructure.DataAccess;
+using System.Data.Entity;
 using System.Threading.Tasks;
 
 namespace HC.Infrastructure.Repository;
@@ -14,39 +15,15 @@ public class EFUserWriteRepository : IUserWriteRepository
         _context = context;
     }
 
-    public Task<int> AddUser(User user)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task AddUser(User user) => await _context.Users.AddAsync(user);
 
-    public Task BecomePublisher(string username)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<User?> GetUserById(UserId userId) =>
+        await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
 
-    public Task DeleteReview(Review review)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<User?> GetUserByUsername(string username) =>
+        await _context.Users.FirstOrDefaultAsync(x => x.Username == username);
 
-    public Task<RefreshToken> GetRefreshToken(string refreshToken)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<User> GetUserById(UserId userId)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<User> GetUserByUsername(string username)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<bool> IsUserExistByEmail(string email)
-    {
-        throw new System.NotImplementedException();
-    }
+    public async Task<bool> IsUserExistByEmail(string email) =>
+        await _context.Users.AnyAsync(x => x.Email == email);
 }
 
