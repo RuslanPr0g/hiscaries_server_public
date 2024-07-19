@@ -10,9 +10,17 @@ using System.Threading.Tasks;
 
 public sealed class StoryWriteService : IStoryWriteService
 {
-    public Task<BaseResult> AddComment(AddCommentCommand command)
+    // TODO: add decent logging
+    private readonly IStoryWriteRepository _storyWriteRepository;
+
+    public StoryWriteService(IStoryWriteRepository storyWriteRepository)
     {
-        throw new System.NotImplementedException();
+        _storyWriteRepository = storyWriteRepository;
+    }
+
+    public async Task<BaseResult> AddComment(AddCommentCommand command)
+    {
+        var story = await _storyWriteRepository.GetStory(command.StoryId);
     }
 
     public Task<BaseResult> AddImageToStory(StoryId storyId, string imagePath)

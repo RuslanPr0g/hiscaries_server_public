@@ -17,6 +17,7 @@ namespace HC.Application.Services;
 
 public sealed class UserWriteService : IUserWriteService
 {
+    // TODO: add decent logging
     private readonly IUserWriteRepository _repository;
     private readonly IIdGenerator _idGenerator;
     private readonly JwtSettings _jwtSettings;
@@ -53,7 +54,7 @@ public sealed class UserWriteService : IUserWriteService
 
     public async Task<BaseResult> PublishReview(PublishReviewCommand command)
     {
-        User? user = await _repository.GetUserById(new UserId(command.ReviewerId));
+        User? user = await _repository.GetUserById(command.ReviewerId);
 
         if (user is null)
         {
@@ -63,9 +64,9 @@ public sealed class UserWriteService : IUserWriteService
         if (command.ReviewId.HasValue)
         {
             user.RePublishReview(
-                new UserId(command.PublisherId),
+                command.PublisherId,
                 command.Message,
-                new ReviewId(command.ReviewId.Value));
+                command.ReviewId.Value);
         }
         else
         {
