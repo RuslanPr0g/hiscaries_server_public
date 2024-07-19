@@ -1,4 +1,6 @@
-﻿using HC.Application.Interface;
+﻿using HC.Application.Common.Constants;
+using HC.Application.Interface;
+using HC.Application.Interface.Generators;
 using HC.Application.Models.Response;
 using HC.Application.Stories.Command;
 using HC.Application.Stories.Command.DeleteStory;
@@ -6,104 +8,108 @@ using HC.Application.Stories.Command.ReadStory;
 using HC.Application.Stories.Command.ScoreStory;
 using HC.Application.StoryPages.Command.CreateStoryPages;
 using HC.Domain.Stories;
+using System;
 using System.Threading.Tasks;
 
 public sealed class StoryWriteService : IStoryWriteService
 {
     // TODO: add decent logging
     private readonly IStoryWriteRepository _storyWriteRepository;
+    private readonly IIdGenerator _idGenerator;
 
-    public StoryWriteService(IStoryWriteRepository storyWriteRepository)
+    public StoryWriteService(IStoryWriteRepository storyWriteRepository, IIdGenerator idGenerator)
     {
         _storyWriteRepository = storyWriteRepository;
+        _idGenerator = idGenerator;
     }
 
     public async Task<BaseResult> AddComment(AddCommentCommand command)
     {
         var story = await _storyWriteRepository.GetStory(command.StoryId);
+
+        if (story is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.StoryWasNotFound);
+        }
+
+        story.AddComment(
+            _idGenerator.Generate((id) => new CommentId(id)),
+            command.UserId,
+            command.Content,
+            command.Score,
+            DateTime.UtcNow);
+
+        return BaseResult.CreateSuccess();
     }
 
-    public Task<BaseResult> AddImageToStory(StoryId storyId, string imagePath)
+    public async Task<BaseResult> SetStoryScoreForAUser(StoryScoreCommand command)
+    {
+        var story = await _storyWriteRepository.GetStory(command.StoryId);
+
+        if (story is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.StoryWasNotFound);
+        }
+
+        story.SetScoreByUser(
+            command.UserId,
+            command.Score,
+            _idGenerator.Generate((id) => new StoryRatingId(id)));
+
+        return BaseResult.CreateSuccess();
+    }
+
+    public async Task<BaseResult> CreateGenre(CreateGenreCommand request)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<BaseResult> AddImageToStoryByBase64(StoryId storyId, byte[] base64)
+    public async Task<UpdateStoryInfoResult> PublishStory(CreateStoryCommand command)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<BaseResult> AddStoryScore(StoryScoreCommand command)
+    public async Task<BaseResult> UpdateAudio(UpdateStoryAudioCommand request)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<UpdateStoryInfoResult> BookmarkStory(BookmarkStoryCommand command)
+    public async Task<BaseResult> UpdateComment(UpdateCommentCommand request)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<BaseResult> CreateGenre(CreateGenreCommand request)
+    public async Task<BaseResult> UpdateGenre(UpdateGenreCommand request)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<BaseResult> DeleteAudio(DeleteStoryAudioCommand request)
+    public async Task<AddStoryPageResult> UpdatePages(UpdateStoryPagesCommand request)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<BaseResult> DeleteComment(DeleteCommentCommand command)
+    public async Task<BaseResult> UpdateStory(UpdateStoryCommand command)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<BaseResult> DeleteGenre(DeleteGenreCommand request)
+    public async Task<BaseResult> DeleteAudio(DeleteStoryAudioCommand request)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<BaseResult> DeleteStory(DeleteStoryCommand command)
+    public async Task<BaseResult> DeleteComment(DeleteCommentCommand command)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<Story> GetStoryById(StoryId storyId)
+    public async Task<BaseResult> DeleteGenre(DeleteGenreCommand request)
     {
         throw new System.NotImplementedException();
     }
 
-    public Task<UpdateStoryInfoResult> PublishStory(CreateStoryCommand command)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<BaseResult> ReadStoryHistory(ReadStoryCommand command)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<BaseResult> UpdateAudio(UpdateStoryAudioCommand request)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<BaseResult> UpdateComment(UpdateCommentCommand request)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<BaseResult> UpdateGenre(UpdateGenreCommand request)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<AddStoryPageResult> UpdatePages(UpdateStoryPagesCommand request)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task<UpdateStoryInfoResult> UpdateStory(UpdateStoryCommand command)
+    public async Task<BaseResult> DeleteStory(DeleteStoryCommand command)
     {
         throw new System.NotImplementedException();
     }

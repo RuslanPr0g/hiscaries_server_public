@@ -3,35 +3,30 @@ using System;
 
 namespace HC.Domain.Stories;
 
-public sealed class Comment : Entity<CommentId>
+public class Comment : Entity<CommentId>
 {
     private Comment(
         CommentId id,
-        Story story,
-        User user,
+        StoryId story,
+        UserId user,
         string content,
         DateTime commentedAt,
-        string username,
         int score) : base(id)
     {
-        StoryId = story.Id;
-        Story = story;
-        UserId = user.Id;
-        User = user;
+        StoryId = story;
+        UserId = user;
         Content = content;
         CommentedAt = commentedAt;
-        Username = username;
         Score = score;
     }
 
     public static Comment Create(
-        Guid id,
-        Story story,
-        User user,
+        CommentId id,
+        StoryId story,
+        UserId user,
         string content,
         DateTime commentedAt,
-        string username,
-        int score) => new Comment(new CommentId(id), story, user, content, commentedAt, username, score);
+        int score) => new Comment(id, story, user, content, commentedAt, score);
 
     public StoryId StoryId { get; init; }
     public Story Story { get; init; }
@@ -39,9 +34,8 @@ public sealed class Comment : Entity<CommentId>
     public User User { get; init; }
 
     public string Content { get; init; }
-    public DateTime CommentedAt { get; init; }
-    public string Username { get; init; }
     public int Score { get; init; }
+    public DateTime CommentedAt { get; init; }
 
     protected Comment()
     {

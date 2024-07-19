@@ -1,4 +1,6 @@
 ﻿using HC.Application.Models.Response;
+using HC.Application.Stories.Command.ReadStory;
+using HC.Application.Stories.Command;
 using HC.Application.Users.Command;
 using HC.Application.Users.Command.LoginUser;
 using HC.Application.Users.Command.PublishReview;
@@ -21,4 +23,7 @@ public interface IUserWriteService
     Task<BaseResult> DeleteReview(DeleteReviewCommand command);
     Task<BaseResult> UpdateUserData(UpdateUserDataCommand command);
     Task<UserWithTokenResult> RefreshToken(RefreshTokenCommand command);
+
+    Task<BaseResult> BookmarkStory(BookmarkStoryCommand command);
+    Task<BaseResult> ReadStoryHistory(ReadStoryCommand command);
 }

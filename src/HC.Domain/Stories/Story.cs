@@ -2,6 +2,7 @@
 using HC.Domain.Users;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HC.Domain.Stories;
 
@@ -67,6 +68,7 @@ public sealed class Story : AggregateRoot<StoryId>
     public ICollection<StoryPage> StoryPages { get; init; }
     public ICollection<Comment> Comments { get; init; }
     public ICollection<StoryAudio> Audios { get; init; }
+    public ICollection<StoryRating> Ratings { get; init; }
 
     public string Title { get; init; }
     public string Description { get; init; }
@@ -79,6 +81,25 @@ public sealed class Story : AggregateRoot<StoryId>
     public void SetImage(byte[] newImage)
     {
         ImagePreview = newImage;
+    }
+
+    public void AddComment(CommentId commentId, UserId userId, string content, int score, DateTime commentedAt)
+    {
+        Comments.Add(Comment.Create(commentId, Id, userId, content, commentedAt, score));
+    }
+
+    public void SetScoreByUser(UserId userId, int score, StoryRatingId ratingId)
+    {
+        var existingRating = Ratings.FirstOrDefault(x => x.UserId == userId);
+
+        if (existingRating is not null)
+        {
+            existingRating.UpdateScore(score);
+        }
+        else
+        {
+            Ratings.Add(new StoryRating(ratingId, Id, userId, score));
+        }
     }
 
     protected Story()

@@ -1,4 +1,5 @@
 ﻿using HC.Domain.Users;
+using System;
 
 namespace HC.Domain.Stories;
 
@@ -13,12 +14,32 @@ public sealed class StoryRating : Entity<StoryRatingId>
         Id = id;
         StoryId = story;
         UserId = user;
+
+        if (score < 1 || score > 5)
+        {
+            // TODO: create a domain exception
+            // TODO: create a value object for that
+            throw new ArgumentException("Provided score was in invalid state.");
+        }
+
         Score = score;
     }
 
     public StoryId StoryId { get; init; }
     public UserId UserId { get; init; }
-    public int Score { get; init; } // TODO: max 5 min 1
+    public int Score { get; private set; }
+
+    internal void UpdateScore(int score)
+    {
+        if (score < 1 || score > 5)
+        {
+            // TODO: create a domain exception
+            // TODO: create a value object for that
+            throw new ArgumentException("Provided score was in invalid state.");
+        }
+
+        Score = score;
+    }
 
     private StoryRating()
     {

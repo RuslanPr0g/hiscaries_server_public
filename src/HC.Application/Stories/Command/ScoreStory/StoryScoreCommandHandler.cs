@@ -18,6 +18,6 @@ public class StoryScoreCommandHandler : IRequestHandler<StoryScoreCommand, BaseR
 
     public async Task<BaseResult> Handle(StoryScoreCommand request, CancellationToken cancellationToken)
     {
-        return await _storyService.AddStoryScore(request);
+        return await _storyService.SetStoryScoreForAUser(request);
     }
 }

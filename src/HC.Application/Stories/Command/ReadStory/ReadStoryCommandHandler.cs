@@ -8,15 +8,15 @@ namespace HC.Application.Stories.Command.ReadStory;
 
 internal class ReadStoryCommandHandler : IRequestHandler<ReadStoryCommand, BaseResult>
 {
-    private readonly IStoryWriteService _storyService;
+    private readonly IUserWriteService _service;
 
-    public ReadStoryCommandHandler(IStoryWriteService storyService)
+    public ReadStoryCommandHandler(IUserWriteService storyService)
     {
-        _storyService = storyService;
+        _service = storyService;
     }
 
     public async Task<BaseResult> Handle(ReadStoryCommand request, CancellationToken cancellationToken)
     {
-        return await _storyService.ReadStoryHistory(request);
+        return await _service.ReadStoryHistory(request);
     }
 }

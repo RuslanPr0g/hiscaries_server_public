@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HC.Application.Models.Response;
+﻿namespace HC.Application.Models.Response;
 
 public record BaseResult(ResultStatus ResultStatus, string? FailReason = null)
 {
