@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HC.Domain.Stories;
+using System;
 using System.Collections.Generic;
 
 public sealed class StoryReadModel
@@ -19,4 +20,9 @@ public sealed class StoryReadModel
     public int CommentCount { get; set; }
     public int ReadCount { get; set; }
     public int PageCount { get; set; }
+
+    public static StoryReadModel FromDomainModel(Story story)
+    {
+        throw new NotImplementedException();
+    }
 }

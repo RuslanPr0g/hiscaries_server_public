@@ -1,5 +1,5 @@
-﻿using System;
-using HC.Domain.Stories;
+﻿using HC.Domain.Stories;
+using System;
 
 namespace HC.Domain.Users;
 
@@ -10,28 +10,36 @@ public sealed class UserReadHistory : Entity<UserReadHistoryId>
         UserId user,
         StoryId story,
         DateTime dateRead,
-        int pageRead,
-        bool softDeleted,
-        string title,
-        string description) : base(id)
+        int pageRead) : base(id)
     {
         Id = id;
         UserId = user;
         StoryId = story;
         DateLastRead = dateRead;
         LastPageRead = pageRead;
-        SoftDeleted = softDeleted;
-        Title = title;
-        Description = description;
+
+        SoftDeleted = false;
     }
 
     public UserId UserId { get; init; }
     public StoryId StoryId { get; init; }
+    public Story Story { get; }
     public DateTime DateLastRead { get; init; }
-    public int LastPageRead { get; init; }
+    public int LastPageRead { get; private set; }
     public bool SoftDeleted { get; init; }
-    public string Title { get; init; }
-    public string Description { get; init; }
+
+    public decimal CalculatePercentageRead()
+    {
+        int totalStoryPage = Story.StoryPages.Count;
+        int currentLastPage = LastPageRead;
+
+        return (currentLastPage / totalStoryPage) * 100;
+    }
+
+    internal void ReadPage(int page)
+    {
+        LastPageRead = page;
+    }
 
     private UserReadHistory()
     {

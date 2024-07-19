@@ -1,4 +1,5 @@
 ﻿using Enterprise.Domain;
+using HC.Domain.Stories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,21 @@ public sealed class User : AggregateRoot<UserId>
     public RefreshToken RefreshToken { get; private set; }
 
     public ICollection<Review> Reviews { get; }
+    public ICollection<UserReadHistory> ReadHistory { get; }
+
+    public void ReadStoryPage(StoryId storyId, int page, DateTime readDate, UserReadHistoryId generatedHistoryPageId)
+    {
+        var historyItem = ReadHistory.FirstOrDefault(x => x.StoryId == storyId);
+
+        if (historyItem is not null)
+        {
+            historyItem.ReadPage(page);
+        }
+        else
+        {
+            ReadHistory.Add(new UserReadHistory(generatedHistoryPageId, Id, storyId, readDate, page));
+        }
+    }
 
     public void BecomePublisher()
     {

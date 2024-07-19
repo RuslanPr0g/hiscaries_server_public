@@ -2,7 +2,6 @@
 using HC.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using System;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,12 +18,14 @@ public class EFUserReadRepository : IUserReadRepository
 
     public async Task<UserReadModel?> GetUserById(Guid userId) =>
         await _context.Users
+            .AsNoTracking()
             .Where(x => x.Id == userId)
             .Select(user => UserReadModel.FromDomainModel(user))
             .FirstOrDefaultAsync();
 
     public async Task<UserReadModel?> GetUserByUsername(string username) =>
         await _context.Users
+            .AsNoTracking()
             .Where(x => x.Username == username)
             .Select(user => UserReadModel.FromDomainModel(user))
             .FirstOrDefaultAsync();

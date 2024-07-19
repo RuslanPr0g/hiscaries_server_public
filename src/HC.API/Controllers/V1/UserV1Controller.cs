@@ -110,7 +110,6 @@ public class UserV1Controller : ControllerBase
         {
             Username = string.Empty,
             Email = request.Email,
-            Banned = request.Banned,
             BirthDate = request.BirthDate,
             PreviousPassword = request.PreviousPassword,
             NewPassword = request.NewPassword,

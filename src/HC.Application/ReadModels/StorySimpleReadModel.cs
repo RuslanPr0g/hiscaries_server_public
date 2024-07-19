@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HC.Domain.Stories;
+using System;
 
 public sealed class StorySimpleReadModel
 {
@@ -11,4 +12,9 @@ public sealed class StorySimpleReadModel
     public DateTime DatePublished { get; set; }
     public DateTime DateWritten { get; set; }
     public string Publisher { get; set; }
+
+    public static StorySimpleReadModel FromDomainModel(Story story)
+    {
+        throw new NotImplementedException();
+    }
 }
