@@ -44,12 +44,7 @@ public class EFUserWriteRepository : IUserWriteRepository
         throw new System.NotImplementedException();
     }
 
-    public Task<string> GetUserRoleByUsername(string username)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public Task UpdateRefreshToken(RefreshToken refreshToken)
+    public Task<bool> IsUserExistByEmail(string email)
     {
         throw new System.NotImplementedException();
     }

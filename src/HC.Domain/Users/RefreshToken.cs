@@ -23,6 +23,18 @@ public sealed class RefreshToken : Entity<RefreshTokenId>
 
     public RefreshToken(RefreshToken token) : base(token.Id)
     {
+        Refresh(token);
+    }
+
+    public string JwtId { get; private set; }
+    public string Token { get; private set; }
+    public DateTime CreationDate { get; private set; }
+    public DateTime ExpiryDate { get; private set; }
+    public bool Used { get; private set; }
+    public bool Invalidated { get; private set; }
+
+    internal void Refresh(RefreshToken token)
+    {
         JwtId = token.JwtId;
         Token = token.Token;
         CreationDate = token.CreationDate;
@@ -31,16 +43,16 @@ public sealed class RefreshToken : Entity<RefreshTokenId>
         Invalidated = token.Invalidated;
     }
 
-    public string JwtId { get; init; }
-    public string Token { get; init; }
-    public DateTime CreationDate { get; init; }
-    public DateTime ExpiryDate { get; init; }
-    public bool Used { get; init; }
-    public bool Invalidated { get; init; }
-
-    internal void Refresh(RefreshToken refreshToken)
+    internal bool Validate()
     {
-        throw new NotImplementedException();
+        if (DateTime.UtcNow > ExpiryDate || Invalidated || Used)
+        {
+            return false;
+        }
+
+        Used = true;
+
+        return true;
     }
 
     private RefreshToken()

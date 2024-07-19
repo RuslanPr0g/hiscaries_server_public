@@ -20,5 +20,5 @@ public interface IUserWriteService
     Task<BaseResult> PublishReview(PublishReviewCommand command);
     Task<BaseResult> DeleteReview(DeleteReviewCommand command);
     Task<BaseResult> UpdateUserData(UpdateUserDataCommand command);
-    Task<RefreshTokenResponse> RefreshToken(RefreshTokenCommand command);
+    Task<UserWithTokenResult> RefreshToken(RefreshTokenCommand command);
 }

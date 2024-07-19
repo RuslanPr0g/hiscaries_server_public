@@ -25,11 +25,11 @@ public sealed class User : AggregateRoot<UserId>
         Role = new UserRole(UserRole.UserRoleEnum.Reader);
     }
 
-    public string Username { get; init; }
-    public string Email { get; init; }
-    public string Password { get; init; }
+    public string Username { get; private set; }
+    public string Email { get; private set; }
+    public string Password { get; private set; }
     public DateTime AccountCreated { get; init; }
-    public DateTime BirthDate { get; init; }
+    public DateTime BirthDate { get; private set; }
     public bool Banned { get; init; }
 
     public UserRole Role { get; private set; }
@@ -94,6 +94,42 @@ public sealed class User : AggregateRoot<UserId>
         {
             RefreshToken = new RefreshToken(refreshToken);
         }
+    }
+
+    public bool ValidateRefreshToken(string jwtId)
+    {
+        if (RefreshToken is null || RefreshToken.JwtId != jwtId)
+        {
+            return false;
+        }
+
+        return RefreshToken.Validate();
+    }
+
+    public void UpdatePersonalInformation(
+        string? updatedUsername,
+        string? email,
+        DateTime? birthDate)
+    {
+        if (!string.IsNullOrEmpty(updatedUsername))
+        {
+            Username = updatedUsername;
+        }
+
+        if (!string.IsNullOrEmpty(email))
+        {
+            Email = email;
+        }
+
+        if (birthDate.HasValue)
+        {
+            BirthDate = birthDate.Value;
+        }
+    }
+
+    public void UpdatePassword(string password)
+    {
+        Password = password;
     }
 
     private User()

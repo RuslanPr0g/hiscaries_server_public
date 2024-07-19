@@ -1,6 +1,7 @@
 ﻿using HC.Application.Common.Constants;
 using HC.Application.Interface;
 using HC.Application.Interface.Generators;
+using HC.Application.Interface.JWT;
 using HC.Application.Models.Response;
 using HC.Application.Options;
 using HC.Application.Users.Command;
@@ -10,9 +11,6 @@ using HC.Application.Users.Command.RefreshToken;
 using HC.Domain.Users;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HC.Application.Services;
@@ -23,17 +21,20 @@ public sealed class UserWriteService : IUserWriteService
     private readonly IIdGenerator _idGenerator;
     private readonly JwtSettings _jwtSettings;
     private readonly TokenValidationParameters _tokenValidationParameters;
+    private readonly IJWTTokenHandler _tokenHandler;
 
     public UserWriteService(
         IUserWriteRepository repository,
         JwtSettings jwtSettings,
         TokenValidationParameters tokenValidationParameters,
-        IIdGenerator idGenerator)
+        IIdGenerator idGenerator,
+        IJWTTokenHandler tokenHandler)
     {
         _repository = repository;
         _jwtSettings = jwtSettings;
         _tokenValidationParameters = tokenValidationParameters;
         _idGenerator = idGenerator;
+        _tokenHandler = tokenHandler;
     }
 
     public async Task<BaseResult> BecomePublisher(string username)
@@ -137,14 +138,17 @@ public sealed class UserWriteService : IUserWriteService
             return UserWithTokenResult.CreateFail(UserFriendlyMessages.UserIsBanned);
         }
 
-        (string generatedToken, RefreshToken generatedRefreshToken) = await GenerateJwtToken(user);
+        (string generatedToken, RefreshTokenDescriptor generatedRefreshToken) =
+            await _tokenHandler.GenerateJwtToken(user, _jwtSettings.Key, _jwtSettings.TokenLifeTime);
 
         if (string.IsNullOrEmpty(generatedToken) || string.IsNullOrEmpty(generatedRefreshToken.Token))
         {
             return UserWithTokenResult.CreateFail(UserFriendlyMessages.TryAgainLater);
         }
 
-        user.UpdateRefreshToken(generatedRefreshToken);
+        user.UpdateRefreshToken(
+            generatedRefreshToken.ToDomainModel(
+                _idGenerator.Generate((id) => new RefreshTokenId(id))));
 
         return UserWithTokenResult.CreateSuccess(generatedToken, generatedRefreshToken.Token);
     }
@@ -178,86 +182,125 @@ public sealed class UserWriteService : IUserWriteService
             DateTime.UtcNow
             );
 
-        (string generatedToken, RefreshToken generatedRefreshToken) = await GenerateJwtToken(createdUser);
+        (string generatedToken, RefreshTokenDescriptor generatedRefreshToken) =
+            await _tokenHandler.GenerateJwtToken(createdUser, _jwtSettings.Key, _jwtSettings.TokenLifeTime);
 
         if (string.IsNullOrEmpty(generatedToken) || string.IsNullOrEmpty(generatedRefreshToken.Token))
         {
             return UserWithTokenResult.CreateFail(UserFriendlyMessages.TryAgainLater);
         }
 
-        createdUser.UpdateRefreshToken(generatedRefreshToken);
+        createdUser.UpdateRefreshToken(
+            generatedRefreshToken.ToDomainModel(
+                _idGenerator.Generate((id) => new RefreshTokenId(id))));
 
         await _repository.AddUser(createdUser);
 
         return UserWithTokenResult.CreateSuccess(generatedToken, generatedRefreshToken.Token);
     }
 
-    public Task<RefreshTokenResponse> RefreshToken(RefreshTokenCommand command)
+    public async Task<UserWithTokenResult> RefreshToken(RefreshTokenCommand command)
     {
-        throw new System.NotImplementedException();
-    }
+        User? user = await _repository.GetUserByUsername(command.Username);
 
-    public Task<BaseResult> UpdateUserData(UpdateUserDataCommand command)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    private ClaimsPrincipal? GetClaimsPrincipalFromToken(string token)
-    {
-        JwtSecurityTokenHandler tokenHandler = new();
-
-        try
+        if (user is null)
         {
-            ClaimsPrincipal principal =
-                tokenHandler.ValidateToken(token, _tokenValidationParameters, out SecurityToken validatedToken);
-
-            return !IsJwtWithValidSecurityAlgorithm(validatedToken) ? null : principal;
+            return UserWithTokenResult.CreateFail(UserFriendlyMessages.UserIsNotFound);
         }
-        catch
+
+        var validatedToken = _tokenHandler.GetTokenWithClaims(command.Token, _tokenValidationParameters);
+
+        if (validatedToken is null)
         {
-            return null;
+            return UserWithTokenResult.CreateFail(UserFriendlyMessages.PleaseRelogin);
         }
-    }
 
-    private static bool IsJwtWithValidSecurityAlgorithm(SecurityToken validatedToken)
-    {
-        return validatedToken is JwtSecurityToken jwtSecurityToken &&
-               jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
-                   StringComparison.InvariantCultureIgnoreCase);
-    }
-
-    private async Task<(string, RefreshToken)> GenerateJwtToken(User user)
-    {
-        JwtSecurityTokenHandler tokenHandler = new();
-        byte[] key = Encoding.ASCII.GetBytes(_jwtSettings.Key);
-        string jti = Guid.NewGuid().ToString();
-        SecurityTokenDescriptor tokenDescriptor = new()
+        if (validatedToken.ExpiryDate > DateTime.UtcNow)
         {
-            Subject = new ClaimsIdentity(new[]
+            return UserWithTokenResult.CreateFail(UserFriendlyMessages.RefreshTokenIsNotExpired);
+        }
+
+        bool validated = user.ValidateRefreshToken(validatedToken.JTI);
+
+        if (!validated)
+        {
+            return UserWithTokenResult.CreateFail(UserFriendlyMessages.RefreshTokenIsExpired);
+        }
+
+        (string generatedToken, RefreshTokenDescriptor generatedRefreshToken) =
+            await _tokenHandler.GenerateJwtToken(user, _jwtSettings.Key, _jwtSettings.TokenLifeTime);
+
+        if (string.IsNullOrEmpty(generatedToken) || string.IsNullOrEmpty(generatedRefreshToken.Token))
+        {
+            return UserWithTokenResult.CreateFail(UserFriendlyMessages.TryAgainLater);
+        }
+
+        user.UpdateRefreshToken(
+            generatedRefreshToken.ToDomainModel(
+                _idGenerator.Generate((id) => new RefreshTokenId(id))));
+
+        return new UserWithTokenResult(ResultStatus.Success, string.Empty, generatedToken, generatedRefreshToken.Token);
+    }
+
+    public async Task<BaseResult> UpdateUserData(UpdateUserDataCommand command)
+    {
+        User? user = await _repository.GetUserByUsername(command.Username);
+
+        if (user is null)
+        {
+            return UserWithTokenResult.CreateFail(UserFriendlyMessages.UserIsNotFound);
+        }
+
+        if (!string.IsNullOrEmpty(command.UpdatedUsername))
+        {
+            var newUsernameUser = await _repository.GetUserByUsername(command.UpdatedUsername);
+
+            if (newUsernameUser is not null)
             {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-                    new Claim(JwtRegisteredClaimNames.Jti, jti),
-                    new Claim(JwtRegisteredClaimNames.Email, user.Username),
-                    new Claim("id", user.Id.Value.ToString()),
-                    new Claim("username", user.Username)
-                }),
-            Expires = DateTime.UtcNow.Add(_jwtSettings.TokenLifeTime),
-            SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        };
+                return UserWithTokenResult.CreateFail(UserFriendlyMessages.UserWithUsernameExists);
+            }
+        }
 
-        SecurityToken token = tokenHandler.CreateToken(tokenDescriptor);
+        var existsWithEmail = await _repository.IsUserExistByEmail(command.Email);
 
-        RefreshToken refreshToken = new(
-            new RefreshTokenId(Guid.NewGuid()),
-            token.Id,
-            jti,
-            DateTime.UtcNow,
-            DateTime.UtcNow.AddMonths(6),
-            false,
-            false);
+        if (existsWithEmail)
+        {
+            return UserWithTokenResult.CreateFail(UserFriendlyMessages.UserWithEmailExists);
+        }
 
-        return (tokenHandler.WriteToken(token), refreshToken);
+        if (!string.IsNullOrEmpty(command.NewPassword))
+        {
+            var result = UpdateUserPassword(user, command.PreviousPassword, command.NewPassword);
+
+            if (result.ResultStatus is ResultStatus.Success)
+            {
+                user.UpdatePersonalInformation(command.UpdatedUsername, command.Email, command.BirthDate);
+            }
+
+            return result;
+        }
+        else
+        {
+            user.UpdatePersonalInformation(command.UpdatedUsername, command.Email, command.BirthDate);
+        }
+
+        return BaseResult.CreateSuccess();
+    }
+
+    private BaseResult UpdateUserPassword(User user, string previousPassword, string newPassword)
+    {
+        var hashedPreviousPassword = HashPassword(previousPassword, "123");
+
+        if (user.Password != hashedPreviousPassword)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.PasswordMismatch);
+        }
+
+        var hashedNewPassword = HashPassword(newPassword, "123");
+
+        user.UpdatePassword(hashedNewPassword);
+
+        return BaseResult.CreateSuccess();
     }
 
     private static string HashPassword(string password, string salt)

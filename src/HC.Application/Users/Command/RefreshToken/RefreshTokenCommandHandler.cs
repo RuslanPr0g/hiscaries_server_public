@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HC.Application.Users.Command.RefreshToken;
 
-public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, RefreshTokenResponse>
+public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, UserWithTokenResult>
 {
     private readonly IUserWriteService _userService;
 
@@ -15,7 +15,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, R
         _userService = userService;
     }
 
-    public async Task<RefreshTokenResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    public async Task<UserWithTokenResult> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         return await _userService.RefreshToken(request);
     }

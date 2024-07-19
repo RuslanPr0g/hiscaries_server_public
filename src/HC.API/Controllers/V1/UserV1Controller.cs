@@ -169,7 +169,7 @@ public class UserV1Controller : ControllerBase
             RefreshToken = request.RefreshToken
         };
 
-        RefreshTokenResponse result = await _mediator.Send(command);
+        UserWithTokenResult result = await _mediator.Send(command);
 
         return Ok(new
         {
