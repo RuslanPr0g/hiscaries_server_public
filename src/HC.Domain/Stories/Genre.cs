@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HC.Domain.Stories;
+﻿namespace HC.Domain.Stories;
 
 public sealed class Genre : Entity<GenreId>
 {
@@ -22,9 +20,16 @@ public sealed class Genre : Entity<GenreId>
         byte[] imagePreview) =>
         new Genre(id, name, description, imagePreview);
 
-    public string Name { get; init; }
-    public string Description { get; init; }
-    public byte[] ImagePreview { get; init; }
+    public string Name { get; private set; }
+    public string Description { get; private set; }
+    public byte[] ImagePreview { get; private set; }
+
+    public void UpdateInformation(string name, string description, byte[] imagePreview)
+    {
+        Name = name;
+        Description = description;
+        ImagePreview = imagePreview;
+    }
 
     protected Genre()
     {

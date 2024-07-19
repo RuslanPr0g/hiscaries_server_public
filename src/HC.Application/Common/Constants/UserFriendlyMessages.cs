@@ -16,4 +16,5 @@ public static class UserFriendlyMessages
     public static string RefreshTokenIsNotExpired { get; internal set; }
     public static string RefreshTokenIsExpired { get; internal set; }
     public static string StoryWasNotFound { get; internal set; }
+    public static string GenreWasNotFound { get; internal set; }
 }

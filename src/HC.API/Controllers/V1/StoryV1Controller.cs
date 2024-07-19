@@ -70,7 +70,7 @@ public class StoryV1Controller : ControllerBase
     {
         UpdateGenreCommand command = new()
         {
-            Id = request.Id,
+            GenreId = request.Id,
             Name = request.Name,
             Description = request.Description,
             ImagePreview = request.ImagePreview

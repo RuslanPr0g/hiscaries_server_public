@@ -75,7 +75,16 @@ public sealed class StoryWriteService : IStoryWriteService
 
     public async Task<BaseResult> UpdateGenre(UpdateGenreCommand command)
     {
-        throw new System.NotImplementedException();
+        var genre = await _repository.GetGenre(command.GenreId);
+
+        if (genre is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.GenreWasNotFound);
+        }
+
+        genre.UpdateInformation(command.Name, command.Description, command.ImagePreview);
+
+        return BaseResult.CreateSuccess();
     }
 
     public async Task<BaseResult> UpdateComment(UpdateCommentCommand command)
@@ -126,10 +135,12 @@ public sealed class StoryWriteService : IStoryWriteService
     {
         var genre = await _repository.GetGenre(command.GenreId);
 
-        if (genre is not null)
+        if (genre is null)
         {
-            _repository.DeleteGenre(genre);
+            return BaseResult.CreateFail(UserFriendlyMessages.GenreWasNotFound);
         }
+
+        _repository.DeleteGenre(genre);
 
         return BaseResult.CreateSuccess();
     }
