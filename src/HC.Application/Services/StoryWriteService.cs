@@ -10,6 +10,7 @@ using HC.Application.StoryPages.Command.CreateStoryPages;
 using HC.Domain.Stories;
 using MediatR;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 public sealed class StoryWriteService : IStoryWriteService
@@ -107,12 +108,43 @@ public sealed class StoryWriteService : IStoryWriteService
 
     public async Task<UpdateStoryInfoResult> PublishStory(CreateStoryCommand command)
     {
-        throw new System.NotImplementedException();
+        var story = Story.Create(
+            _idGenerator.Generate((id) => new StoryId(id)),
+            command.PublisherId,
+            command.Title,
+            command.Description,
+            command.AuthorName,
+            command.GenreIds.Select(id => Genre.Create(id)).ToList(),
+            command.AgeLimit,
+            command.ImagePreview,
+            DateTime.UtcNow,
+            command.DateWritten);
+
+        await _repository.AddStory(story);
+
+        return UpdateStoryInfoResult.CreateSuccess(story.Id);
     }
 
     public async Task<BaseResult> UpdateStory(UpdateStoryCommand command)
     {
-        throw new System.NotImplementedException();
+        var story = await _repository.GetStory(command.StoryId);
+
+        if (story is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.StoryWasNotFound);
+        }
+
+        story.UpdateInformation(
+            command.Title,
+            command.Description,
+            command.AuthorName,
+            command.GenreIds.Select(id => Genre.Create(id)).ToList(),
+            command.AgeLimit,
+            command.ImagePreview,
+            DateTime.UtcNow,
+            command.DateWritten);
+
+        return BaseResult.CreateSuccess();
     }
 
     public async Task<AddStoryPageResult> UpdatePages(UpdateStoryPagesCommand command)

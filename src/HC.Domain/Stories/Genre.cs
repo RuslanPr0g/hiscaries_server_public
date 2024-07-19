@@ -13,12 +13,18 @@ public sealed class Genre : Entity<GenreId>
         ImagePreview = imagePreview;
     }
 
+    private Genre(GenreId id) : base(id)
+    {
+    }
+
     public static Genre Create(
         GenreId id,
         string name,
         string description,
         byte[] imagePreview) =>
         new Genre(id, name, description, imagePreview);
+
+    public static Genre Create(GenreId id) => new Genre(id);
 
     public string Name { get; private set; }
     public string Description { get; private set; }

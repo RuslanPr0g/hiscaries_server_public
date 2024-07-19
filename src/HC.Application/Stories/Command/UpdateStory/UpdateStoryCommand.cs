@@ -7,7 +7,7 @@ namespace HC.Application.Stories.Command;
 
 public class UpdateStoryCommand : IRequest<UpdateStoryInfoResult>
 {
-    public string Username { get; set; }
+    public Guid PublisherId { get; set; }
 
     public Guid StoryId { get; set; }
 
@@ -22,8 +22,6 @@ public class UpdateStoryCommand : IRequest<UpdateStoryInfoResult>
     public int AgeLimit { get; set; }
 
     public byte[] ImagePreview { get; set; }
-
-    public DateTime DatePublished { get; set; }
 
     public DateTime DateWritten { get; set; }
 }

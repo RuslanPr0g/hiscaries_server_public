@@ -15,8 +15,6 @@ public sealed class Story : AggregateRoot<StoryId>
         string description,
         string authorName,
         ICollection<Genre> genres,
-        ICollection<Comment> comments,
-        ICollection<StoryPage> storyPages,
         int ageLimit,
         byte[] imagePreview,
         DateTime datePublished,
@@ -28,35 +26,30 @@ public sealed class Story : AggregateRoot<StoryId>
         Description = description;
         AuthorName = authorName;
         Genres = genres;
-        Comments = comments;
-        StoryPages = storyPages;
         AgeLimit = ageLimit;
         ImagePreview = imagePreview;
         DatePublished = datePublished;
+        DateEdited = datePublished;
         DateWritten = dateWritten;
     }
 
     public static Story Create(
-        Guid id,
+        StoryId id,
         UserId publisher,
         string title,
         string description,
         string authorName,
         ICollection<Genre> genres,
-        ICollection<Comment> comments,
-        ICollection<StoryPage> storyPages,
         int ageLimit,
         byte[] imagePreview,
         DateTime datePublished,
         DateTime dateWritten) => new Story(
-            new StoryId(id),
+            id,
             publisher,
             title,
             description,
             authorName,
             genres,
-            comments,
-            storyPages,
             ageLimit,
             imagePreview,
             datePublished,
@@ -70,13 +63,14 @@ public sealed class Story : AggregateRoot<StoryId>
     public ICollection<StoryAudio> Audios { get; init; }
     public ICollection<StoryRating> Ratings { get; init; }
 
-    public string Title { get; init; }
-    public string Description { get; init; }
-    public string AuthorName { get; init; }
-    public int AgeLimit { get; init; }
+    public string Title { get; private set; }
+    public string Description { get; private set; }
+    public string AuthorName { get; private set; }
+    public int AgeLimit { get; private set; }
     public byte[] ImagePreview { get; private set; }
-    public DateTime DatePublished { get; init; }
-    public DateTime DateWritten { get; init; }
+    public DateTime DatePublished { get; private set; }
+    public DateTime DateEdited { get; private set; }
+    public DateTime DateWritten { get; private set; }
 
     public void SetImage(byte[] newImage)
     {
@@ -119,6 +113,32 @@ public sealed class Story : AggregateRoot<StoryId>
         if (comment is not null)
         {
             comment.UpdateContent(content, score, updatedAt);
+        }
+    }
+
+    public void UpdateInformation(
+        string title,
+        string description,
+        string authorName,
+        ICollection<Genre> genres,
+        int ageLimit,
+        byte[] imagePreview,
+        DateTime dateEdited,
+        DateTime dateWritten)
+    {
+        Title = title;
+        Description = description;
+        AuthorName = authorName;
+        AgeLimit = ageLimit;
+        ImagePreview = imagePreview;
+        DateEdited = dateEdited;
+        DateWritten = dateWritten;
+
+        Genres.Clear();
+
+        foreach (var genre in genres)
+        {
+            Genres.Add(genre);
         }
     }
 
