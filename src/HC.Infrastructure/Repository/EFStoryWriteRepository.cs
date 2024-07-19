@@ -15,8 +15,12 @@ public sealed class EFStoryWriteRepository : IStoryWriteRepository
         _context = context;
     }
 
+    public async Task AddGenre(Genre genre) => await _context.Genres.AddAsync(genre);
+
     public async Task AddStory(Story story) =>
         await _context.Stories.AddAsync(story);
+
+    public void DeleteGenre(Genre genre) => _context.Genres.Remove(genre);
 
     public void DeleteStory(Story story) =>
         _context.Stories.Remove(story);

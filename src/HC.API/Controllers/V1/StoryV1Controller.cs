@@ -84,7 +84,7 @@ public class StoryV1Controller : ControllerBase
     {
         DeleteGenreCommand command = new()
         {
-            Id = request.Id,
+            GenreId = request.Id,
         };
 
         return (await _mediator.Send(command)).ToObjectResult();
@@ -248,7 +248,7 @@ public class StoryV1Controller : ControllerBase
     {
         DeleteCommentCommand command = new()
         {
-            Id = commentId
+            StoryId = commentId
         };
 
         return (await _mediator.Send(command)).ToObjectResult();

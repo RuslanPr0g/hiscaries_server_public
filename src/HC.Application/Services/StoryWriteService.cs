@@ -8,24 +8,25 @@ using HC.Application.Stories.Command.ReadStory;
 using HC.Application.Stories.Command.ScoreStory;
 using HC.Application.StoryPages.Command.CreateStoryPages;
 using HC.Domain.Stories;
+using MediatR;
 using System;
 using System.Threading.Tasks;
 
 public sealed class StoryWriteService : IStoryWriteService
 {
     // TODO: add decent logging
-    private readonly IStoryWriteRepository _storyWriteRepository;
+    private readonly IStoryWriteRepository _repository;
     private readonly IIdGenerator _idGenerator;
 
     public StoryWriteService(IStoryWriteRepository storyWriteRepository, IIdGenerator idGenerator)
     {
-        _storyWriteRepository = storyWriteRepository;
+        _repository = storyWriteRepository;
         _idGenerator = idGenerator;
     }
 
     public async Task<BaseResult> AddComment(AddCommentCommand command)
     {
-        var story = await _storyWriteRepository.GetStory(command.StoryId);
+        var story = await _repository.GetStory(command.StoryId);
 
         if (story is null)
         {
@@ -44,7 +45,7 @@ public sealed class StoryWriteService : IStoryWriteService
 
     public async Task<BaseResult> SetStoryScoreForAUser(StoryScoreCommand command)
     {
-        var story = await _storyWriteRepository.GetStory(command.StoryId);
+        var story = await _repository.GetStory(command.StoryId);
 
         if (story is null)
         {
@@ -59,7 +60,25 @@ public sealed class StoryWriteService : IStoryWriteService
         return BaseResult.CreateSuccess();
     }
 
-    public async Task<BaseResult> CreateGenre(CreateGenreCommand request)
+    public async Task<BaseResult> CreateGenre(CreateGenreCommand command)
+    {
+        var genre = Genre.Create(
+            _idGenerator.Generate((id) => new GenreId(id)),
+            command.Name,
+            command.Description,
+            command.ImagePreview);
+
+        await _repository.AddGenre(genre);
+
+        return BaseResult.CreateSuccess();
+    }
+
+    public async Task<BaseResult> UpdateGenre(UpdateGenreCommand command)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public async Task<BaseResult> UpdateComment(UpdateCommentCommand command)
     {
         throw new System.NotImplementedException();
     }
@@ -69,49 +88,62 @@ public sealed class StoryWriteService : IStoryWriteService
         throw new System.NotImplementedException();
     }
 
-    public async Task<BaseResult> UpdateAudio(UpdateStoryAudioCommand request)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public async Task<BaseResult> UpdateComment(UpdateCommentCommand request)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public async Task<BaseResult> UpdateGenre(UpdateGenreCommand request)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public async Task<AddStoryPageResult> UpdatePages(UpdateStoryPagesCommand request)
-    {
-        throw new System.NotImplementedException();
-    }
-
     public async Task<BaseResult> UpdateStory(UpdateStoryCommand command)
     {
         throw new System.NotImplementedException();
     }
 
-    public async Task<BaseResult> DeleteAudio(DeleteStoryAudioCommand request)
+    public async Task<AddStoryPageResult> UpdatePages(UpdateStoryPagesCommand command)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public async Task<BaseResult> UpdateAudio(UpdateStoryAudioCommand command)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public async Task<BaseResult> DeleteAudio(DeleteStoryAudioCommand command)
     {
         throw new System.NotImplementedException();
     }
 
     public async Task<BaseResult> DeleteComment(DeleteCommentCommand command)
     {
-        throw new System.NotImplementedException();
+        var story = await _repository.GetStory(command.StoryId);
+
+        if (story is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.StoryWasNotFound);
+        }
+
+        story.DeleteComment(command.CommentId);
+
+        return BaseResult.CreateSuccess();
     }
 
-    public async Task<BaseResult> DeleteGenre(DeleteGenreCommand request)
+    public async Task<BaseResult> DeleteGenre(DeleteGenreCommand command)
     {
-        throw new System.NotImplementedException();
+        var genre = await _repository.GetGenre(command.GenreId);
+
+        if (genre is not null)
+        {
+            _repository.DeleteGenre(genre);
+        }
+
+        return BaseResult.CreateSuccess();
     }
 
     public async Task<BaseResult> DeleteStory(DeleteStoryCommand command)
     {
-        throw new System.NotImplementedException();
+        var story = await _repository.GetStory(command.StoryId);
+
+        if (story is not null)
+        {
+            _repository.DeleteStory(story);
+        }
+
+        return BaseResult.CreateSuccess();
     }
 
     //    //[HttpGet("audio")]
@@ -120,14 +152,14 @@ public sealed class StoryWriteService : IStoryWriteService
     //    //    UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
 
     //    //    if (user.Username is null)
-    //    //        return BadRequest("Token expired");
+    //    //        return Badcommand("Token expired");
 
     //    //    List<StoryAudio> audioModels = await _storyRepository.GetAudio(storyId, user);
     //    //    StoryAudio story = audioModels.FirstOrDefault();
 
     //    //    byte[] result = await System.IO.File.ReadAllBytesAsync("audios/" + story?.FileId + ".mp3");
 
-    //    //    List<GetStoryFilesRequest> storyFilesRead = audioModels.Select(x =>
+    //    //    List<GetStoryFilescommand> storyFilesRead = audioModels.Select(x =>
     //    //        new GetStoryFiles(x.Id, x.FileId, x.DateAdded, x.Name, result)).ToList();
 
     //    //    return Ok(storyFilesRead);
@@ -149,7 +181,7 @@ public sealed class StoryWriteService : IStoryWriteService
 
     //    //[HttpPost("audio")]
     //    //[AllowAnonymous]
-    //    //public async Task<IActionResult> AddAudioForStory([FromBody] CreateAudioModelRequest audio)
+    //    //public async Task<IActionResult> AddAudioForStory([FromBody] CreateAudioModelcommand audio)
     //    //{
     //    //    Guid newAudioId = Guid.NewGuid();
     //    //    DateTimeOffset currentDate = DateTimeOffset.Now;
@@ -168,7 +200,7 @@ public sealed class StoryWriteService : IStoryWriteService
     //    //}
 
     //    //[HttpPut("audio")]
-    //    //public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudioRequest audio)
+    //    //public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudiocommand audio)
     //    //{
     //    //    StoryAudio existingAudio = await _storyRepository.GetAudioById(audio.AudioId);
 

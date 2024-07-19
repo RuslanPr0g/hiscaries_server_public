@@ -102,6 +102,16 @@ public sealed class Story : AggregateRoot<StoryId>
         }
     }
 
+    public void DeleteComment(CommentId commentId)
+    {
+        var comment = Comments.FirstOrDefault(x => x.Id == commentId);
+
+        if (comment is not null)
+        {
+            Comments.Remove(comment);
+        }
+    }
+
     protected Story()
     {
     }

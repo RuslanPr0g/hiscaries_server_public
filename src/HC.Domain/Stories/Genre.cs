@@ -16,11 +16,11 @@ public sealed class Genre : Entity<GenreId>
     }
 
     public static Genre Create(
-        Guid id,
+        GenreId id,
         string name,
         string description,
         byte[] imagePreview) =>
-        new Genre(new GenreId(id), name, description, imagePreview);
+        new Genre(id, name, description, imagePreview);
 
     public string Name { get; init; }
     public string Description { get; init; }
