@@ -112,6 +112,16 @@ public sealed class Story : AggregateRoot<StoryId>
         }
     }
 
+    public void UpdateComment(CommentId commentId, string content, int score, DateTime updatedAt)
+    {
+        var comment = Comments.FirstOrDefault(x => x.Id == commentId);
+
+        if (comment is not null)
+        {
+            comment.UpdateContent(content, score, updatedAt);
+        }
+    }
+
     protected Story()
     {
     }

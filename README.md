@@ -17,6 +17,7 @@ https://github.com/RuslanPr0g/Hiscary-WebsiteClient apps would be refactored to 
 - add global exception handling
 - add logging for the system
 - .... todo: other points
+- add auth checks for user roles, etc, such as user should be able to delete only its own comment, story, etc. only admin can delete all ,etc.
 - add docker to have it all in one place
 - add optimistic concurrency
 - populate this readme with how to run information

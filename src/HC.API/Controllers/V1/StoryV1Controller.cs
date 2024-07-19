@@ -271,7 +271,7 @@ public class StoryV1Controller : ControllerBase
         UpdateCommentCommand command = new()
         {
             UserId = new Guid(),
-            Id = request.Id,
+            CommentId = request.Id,
             StoryId = request.StoryId,
             Content = request.Content
         };

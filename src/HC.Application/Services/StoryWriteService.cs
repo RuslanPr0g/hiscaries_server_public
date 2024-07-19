@@ -89,7 +89,20 @@ public sealed class StoryWriteService : IStoryWriteService
 
     public async Task<BaseResult> UpdateComment(UpdateCommentCommand command)
     {
-        throw new System.NotImplementedException();
+        var story = await _repository.GetStory(command.StoryId);
+
+        if (story is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.StoryWasNotFound);
+        }
+
+        story.UpdateComment(
+            command.CommentId,
+            command.Content,
+            command.Score,
+            DateTime.UtcNow);
+
+        return BaseResult.CreateSuccess();
     }
 
     public async Task<UpdateStoryInfoResult> PublishStory(CreateStoryCommand command)
