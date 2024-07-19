@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HC.Application.StoryPages.Command.CreateStoryPages;
 
-public class UpdateStoryPagesCommandHandler : IRequestHandler<UpdateStoryPagesCommand, AddStoryPageResult>
+public class UpdateStoryPagesCommandHandler : IRequestHandler<UpdateStoryPagesCommand, BaseResult>
 {
     private readonly IStoryWriteService _storyService;
 
@@ -15,7 +15,7 @@ public class UpdateStoryPagesCommandHandler : IRequestHandler<UpdateStoryPagesCo
         _storyService = storyPageService;
     }
 
-    public async Task<AddStoryPageResult> Handle(UpdateStoryPagesCommand request, CancellationToken cancellationToken)
+    public async Task<BaseResult> Handle(UpdateStoryPagesCommand request, CancellationToken cancellationToken)
     {
         return await _storyService.UpdatePages(request);
     }

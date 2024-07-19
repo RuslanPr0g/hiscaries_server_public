@@ -147,9 +147,18 @@ public sealed class StoryWriteService : IStoryWriteService
         return BaseResult.CreateSuccess();
     }
 
-    public async Task<AddStoryPageResult> UpdatePages(UpdateStoryPagesCommand command)
+    public async Task<BaseResult> UpdatePages(UpdateStoryPagesCommand command)
     {
-        throw new System.NotImplementedException();
+        var story = await _repository.GetStory(command.StoryId);
+
+        if (story is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.StoryWasNotFound);
+        }
+
+        story.SetContents(command.Contents, DateTime.UtcNow);
+
+        return BaseResult.CreateSuccess();
     }
 
     public async Task<BaseResult> UpdateAudio(UpdateStoryAudioCommand command)

@@ -209,7 +209,7 @@ public class StoryV1Controller : ControllerBase
         UpdateStoryPagesCommand command = new()
         {
             StoryId = request.StoryId,
-            Content = request.Content
+            Contents = request.Content
         };
 
         return (await _mediator.Send(command)).ToObjectResult();

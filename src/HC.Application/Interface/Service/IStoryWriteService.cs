@@ -22,5 +22,5 @@ public interface IStoryWriteService
     Task<BaseResult> DeleteGenre(DeleteGenreCommand request);
     Task<BaseResult> DeleteAudio(DeleteStoryAudioCommand request);
     Task<BaseResult> UpdateAudio(UpdateStoryAudioCommand request);
-    Task<AddStoryPageResult> UpdatePages(UpdateStoryPagesCommand request);
+    Task<BaseResult> UpdatePages(UpdateStoryPagesCommand request);
 }

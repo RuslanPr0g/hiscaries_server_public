@@ -30,7 +30,7 @@ public sealed class UserReadHistory : Entity<UserReadHistoryId>
 
     public decimal CalculatePercentageRead()
     {
-        int totalStoryPage = Story.StoryPages.Count;
+        int totalStoryPage = Story.Contents.Count;
         int currentLastPage = LastPageRead;
 
         return (currentLastPage / totalStoryPage) * 100;

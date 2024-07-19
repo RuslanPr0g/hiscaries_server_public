@@ -58,7 +58,7 @@ public sealed class Story : AggregateRoot<StoryId>
     public UserId PublisherId { get; init; }
     public User Publisher { get; init; }
     public ICollection<Genre> Genres { get; init; }
-    public ICollection<StoryPage> StoryPages { get; init; }
+    public ICollection<StoryPage> Contents { get; init; }
     public ICollection<Comment> Comments { get; init; }
     public ICollection<StoryAudio> Audios { get; init; }
     public ICollection<StoryRating> Ratings { get; init; }
@@ -140,6 +140,21 @@ public sealed class Story : AggregateRoot<StoryId>
         {
             Genres.Add(genre);
         }
+    }
+
+    public void SetContents(IEnumerable<string> contents, DateTime editedAt)
+    {
+        Contents.Clear();
+
+        int pageIndex = 0;
+
+        foreach (var content in contents)
+        {
+            Contents.Add(new StoryPage(Id, pageIndex, content));
+            pageIndex++;
+        }
+
+        DateEdited = editedAt;
     }
 
     protected Story()
