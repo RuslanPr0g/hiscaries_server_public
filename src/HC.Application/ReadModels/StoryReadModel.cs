@@ -21,6 +21,8 @@ public sealed class StoryReadModel
     public int ReadCount { get; set; }
     public int PageCount { get; set; }
 
+    public IEnumerable<StoryAudioReadModel> Audios { get; set; }
+
     public static StoryReadModel FromDomainModel(Story story)
     {
         throw new NotImplementedException();

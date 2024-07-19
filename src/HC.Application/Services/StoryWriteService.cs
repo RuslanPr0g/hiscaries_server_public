@@ -211,25 +211,6 @@ public sealed class StoryWriteService : IStoryWriteService
         return BaseResult.CreateSuccess();
     }
 
-    //    //[HttpGet("audio")]
-    //    //public async Task<IActionResult> GetAudioForStory([FromQuery] int storyId)
-    //    //{
-    //    //    UserConnection user = new(GetCurrentUsername(), GetCurrentHash());
-
-    //    //    if (user.Username is null)
-    //    //        return Badcommand("Token expired");
-
-    //    //    List<StoryAudio> audioModels = await _storyRepository.GetAudio(storyId, user);
-    //    //    StoryAudio story = audioModels.FirstOrDefault();
-
-    //    //    byte[] result = await System.IO.File.ReadAllBytesAsync("audios/" + story?.FileId + ".mp3");
-
-    //    //    List<GetStoryFilescommand> storyFilesRead = audioModels.Select(x =>
-    //    //        new GetStoryFiles(x.Id, x.FileId, x.DateAdded, x.Name, result)).ToList();
-
-    //    //    return Ok(storyFilesRead);
-    //    //}
-
     //    public async Task AddImageToStory(int storyId, string imagePath)
     //    {
     //        Story story = await _storyRepository.GetStory(storyId);
