@@ -17,19 +17,27 @@ public sealed class StoryAudio : Entity<StoryAudioId>
         ArgumentNullException.ThrowIfNull(name);
 
         FileId = id.Value;
-        DateAdded = dateAdded;
+        CreatedAt = dateAdded;
         Name = name;
     }
 
     public static StoryAudio Create(
-        Guid id,
+        StoryAudioId id,
         DateTime dateAdded,
         string name) =>
-        new StoryAudio(new StoryAudioId(id), dateAdded, name);
+        new StoryAudio(id, dateAdded, name);
 
-    public Guid FileId { get; init; }
-    public DateTime DateAdded { get; init; }
-    public string Name { get; init; }
+    internal void UpdateInformation(Guid fileId, string name, DateTime updatedAt)
+    {
+        FileId = fileId;
+        Name = name;
+        UpdatedAt = updatedAt;
+    }
+
+    public Guid FileId { get; private set; }
+    public DateTime CreatedAt { get; init; }
+    public DateTime UpdatedAt { get; private set; }
+    public string Name { get; private set; }
 
     protected StoryAudio()
     {

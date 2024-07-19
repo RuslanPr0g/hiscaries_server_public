@@ -72,11 +72,6 @@ public sealed class Story : AggregateRoot<StoryId>
     public DateTime DateEdited { get; private set; }
     public DateTime DateWritten { get; private set; }
 
-    public void SetImage(byte[] newImage)
-    {
-        ImagePreview = newImage;
-    }
-
     public void AddComment(CommentId commentId, UserId userId, string content, int score, DateTime commentedAt)
     {
         Comments.Add(Comment.Create(commentId, Id, userId, content, commentedAt, score));
@@ -162,6 +157,24 @@ public sealed class Story : AggregateRoot<StoryId>
         var fileId = Audios.FirstOrDefault()?.FileId;
         Audios.Clear();
         return fileId;
+    }
+
+    public void SetAudio(
+        StoryAudioId storyAudioId,
+        Guid fileId,
+        DateTime updatedAt,
+        string name)
+    {
+        var audio = Audios.FirstOrDefault();
+
+        if (audio is not null)
+        {
+            audio.UpdateInformation(fileId, name, updatedAt);
+        }
+         else
+        {
+            Audios.Add(StoryAudio.Create(storyAudioId, updatedAt, name));
+        }
     }
 
     protected Story()

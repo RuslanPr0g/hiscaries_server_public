@@ -8,8 +8,10 @@ using HC.Application.Stories.Command.ReadStory;
 using HC.Application.Stories.Command.ScoreStory;
 using HC.Application.StoryPages.Command.CreateStoryPages;
 using HC.Domain.Stories;
+using HC.Domain.Users;
 using MediatR;
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -163,53 +165,24 @@ public sealed class StoryWriteService : IStoryWriteService
 
     public async Task<BaseResult> UpdateAudio(UpdateStoryAudioCommand command)
     {
-        //    public async Task AddImageToStory(int storyId, string imagePath)
-        //    {
-        //        Story story = await _storyRepository.GetStory(storyId);
-        //        story.SetImage(ImageHelper.ImageToByteArrayFromFilePath(imagePath));
-        //        await _storyRepository.UpdateStory(story);
-        //    }
+        var story = await _repository.GetStory(command.StoryId);
 
-        //    public async Task AddImageToStoryByBase64(int storyId, byte[] base64)
-        //    {
-        //        Story story = await _storyRepository.GetStory(storyId);
-        //        story.SetImage(base64);
-        //        await _storyRepository.UpdateStory(story);
-        //    }
+        if (story is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.StoryWasNotFound);
+        }
 
-        //    //[HttpPost("audio")]
-        //    //[AllowAnonymous]
-        //    //public async Task<IActionResult> AddAudioForStory([FromBody] CreateAudioModelcommand audio)
-        //    //{
-        //    //    Guid newAudioId = Guid.NewGuid();
-        //    //    DateTimeOffset currentDate = DateTimeOffset.Now;
-        //    //    StoryAudio storyAudio = new(newAudioId, currentDate.Date, audio.Name);
+        Guid fileId = Guid.NewGuid();
 
-        //    //    SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + newAudioId + ".mp3");
+        story.SetAudio(
+            _idGenerator.Generate((id) => new StoryAudioId(id)),
+            fileId,
+            DateTime.UtcNow,
+            command.Name);
 
-        //    //    int result = await _storyRepository.CreateAudio(storyAudio, user);
-        //    //    return Ok(result);
-        //    //}
+        SaveByteArrayToFileWithBinaryWriter(command.Audio, "audios/" + fileId + ".mp3");
 
-        //    //public static void SaveByteArrayToFileWithBinaryWriter(byte[] data, string filePath)
-        //    //{
-        //    //    using BinaryWriter writer = new(System.IO.File.OpenWrite(filePath));
-        //    //    writer.Write(data);
-        //    //}
-
-        //    //[HttpPut("audio")]
-        //    //public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudiocommand audio)
-        //    //{
-        //    //    StoryAudio existingAudio = await _storyRepository.GetAudioById(audio.AudioId);
-
-        //    //    if (existingAudio is null)
-        //    //        return NotFound("Audio not found");
-
-        //    //    SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + existingAudio.FileId + ".mp3");
-
-        //    //    return Ok();
-        //    //}
-        //}
+        return BaseResult.CreateSuccess();
     }
 
     public async Task<BaseResult> DeleteAudio(DeleteStoryAudioCommand command)
@@ -274,5 +247,11 @@ public sealed class StoryWriteService : IStoryWriteService
         }
 
         return BaseResult.CreateSuccess();
+    }
+
+    private static void SaveByteArrayToFileWithBinaryWriter(byte[] data, string filePath)
+    {
+        using BinaryWriter writer = new(File.OpenWrite(filePath));
+        writer.Write(data);
     }
 }

@@ -8,14 +8,14 @@ public class GetStoryFilesRequest
     {
         Id = id;
         FileId = fileId;
-        DateAdded = dateAdded;
+        CreatedAt = dateAdded;
         Name = name;
         Bytes = bytes;
     }
 
     public int Id { get; }
     public Guid FileId { get; }
-    public DateTime DateAdded { get; }
+    public DateTime CreatedAt { get; }
     public string Name { get; }
     public byte[] Bytes { get; }
 }

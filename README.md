@@ -20,6 +20,7 @@ https://github.com/RuslanPr0g/Hiscary-WebsiteClient apps would be refactored to 
 - add auth checks for user roles, etc, such as user should be able to delete only its own comment, story, etc. only admin can delete all ,etc.
 - add docker to have it all in one place
 - add optimistic concurrency
+- add audit (created at, updated at, etc) for Entity<>
 - populate this readme with how to run information
 - add unit tests
 - add integration tests

@@ -7,7 +7,6 @@ namespace HC.Application.Stories.Command.ScoreStory;
 public class UpdateStoryAudioCommand : IRequest<BaseResult>
 {
     public Guid StoryId { get; set; }
-    public Guid UserId { get; set; }
     public string Name { get; set; }
     public byte[] Audio { get; set; }
 }

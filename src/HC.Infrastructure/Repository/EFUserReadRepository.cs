@@ -19,7 +19,7 @@ public class EFUserReadRepository : IUserReadRepository
     public async Task<UserReadModel?> GetUserById(Guid userId) =>
         await _context.Users
             .AsNoTracking()
-            .Where(x => x.Id == userId)
+            .Where(x => x.Id.Value == userId)
             .Select(user => UserReadModel.FromDomainModel(user))
             .FirstOrDefaultAsync();
 

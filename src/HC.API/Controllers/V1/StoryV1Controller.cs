@@ -133,13 +133,11 @@ public class StoryV1Controller : ControllerBase
 
         CreateStoryCommand command = new()
         {
-            Username = string.Empty,
             Title = request.Title,
             Description = request.Description,
             AuthorName = request.AuthorName,
             GenreIds = request.GenreIds,
             AgeLimit = request.AgeLimit,
-            DatePublished = DateTime.Now,
             DateWritten = request.DateWritten,
             ImagePreview = imageInBytes
         };
@@ -165,7 +163,6 @@ public class StoryV1Controller : ControllerBase
 
         UpdateStoryCommand command = new()
         {
-            Username = string.Empty,
             Title = request.Title,
             Description = request.Description,
             AuthorName = request.AuthorName,
@@ -223,8 +220,7 @@ public class StoryV1Controller : ControllerBase
         {
             StoryId = request.StoryId,
             UserId = new Guid(),
-            Content = request.Content,
-            CommentedAt = DateTime.Now
+            Content = request.Content
         };
 
         return (await _mediator.Send(command)).ToObjectResult();
@@ -270,7 +266,6 @@ public class StoryV1Controller : ControllerBase
     {
         UpdateCommentCommand command = new()
         {
-            UserId = new Guid(),
             CommentId = request.Id,
             StoryId = request.StoryId,
             Content = request.Content
@@ -285,7 +280,6 @@ public class StoryV1Controller : ControllerBase
     {
         UpdateStoryAudioCommand command = new()
         {
-            UserId = new Guid(),
             StoryId = request.StoryId,
             Name = request.Name,
             Audio = request.Audio
@@ -299,7 +293,6 @@ public class StoryV1Controller : ControllerBase
     {
         UpdateStoryAudioCommand command = new()
         {
-            UserId = new Guid(),
             StoryId = request.StoryId,
             Name = request.Name,
             Audio = request.Audio

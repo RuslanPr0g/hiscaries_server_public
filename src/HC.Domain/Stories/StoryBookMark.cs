@@ -14,12 +14,12 @@ public sealed class StoryBookMark : Entity<StoryBookMarkId>
         Id = id;
         UserId = user;
         StoryId = story;
-        DateAdded = dateAdded;
+        CreatedAt = dateAdded;
     }
 
     public UserId UserId { get; init; }
     public StoryId StoryId { get; init; }
-    public DateTime DateAdded { get; init; }
+    public DateTime CreatedAt { get; init; }
 
     private StoryBookMark()
     {
