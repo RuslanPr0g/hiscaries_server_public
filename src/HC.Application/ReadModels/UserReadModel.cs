@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HC.Domain.Users;
+using System;
 using System.Collections.Generic;
 
 public sealed class UserReadModel
@@ -16,4 +17,9 @@ public sealed class UserReadModel
     public IEnumerable<StoryBookMarkReadModel> BookmarkedStories { get; set; }
     public IEnumerable<ReviewReadModel> Reviews { get; set; }
     public UserReadHistoryReadModel ReadHistory { get; set; }
+
+    public static UserReadModel FromDomainModel(User user)
+    {
+        throw new NotImplementedException();
+    }
 }
