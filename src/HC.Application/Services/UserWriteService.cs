@@ -4,6 +4,8 @@ using HC.Application.Interface.Generators;
 using HC.Application.Interface.JWT;
 using HC.Application.Models.Response;
 using HC.Application.Options;
+using HC.Application.Stories.Command;
+using HC.Application.Stories.Command.ReadStory;
 using HC.Application.Users.Command;
 using HC.Application.Users.Command.LoginUser;
 using HC.Application.Users.Command.PublishReview;
@@ -307,5 +309,15 @@ public sealed class UserWriteService : IUserWriteService
     private static string HashPassword(string password, string salt)
     {
         return BCrypt.Net.BCrypt.HashPassword(password, salt);
+    }
+
+    public Task<BaseResult> BookmarkStory(BookmarkStoryCommand command)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<BaseResult> ReadStoryHistory(ReadStoryCommand command)
+    {
+        throw new NotImplementedException();
     }
 }
