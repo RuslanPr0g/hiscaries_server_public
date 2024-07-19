@@ -157,6 +157,13 @@ public sealed class Story : AggregateRoot<StoryId>
         DateEdited = editedAt;
     }
 
+    public Guid? ClearAllAudio()
+    {
+        var fileId = Audios.FirstOrDefault()?.FileId;
+        Audios.Clear();
+        return fileId;
+    }
+
     protected Story()
     {
     }

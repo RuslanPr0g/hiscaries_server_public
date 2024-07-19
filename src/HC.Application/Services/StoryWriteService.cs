@@ -163,12 +163,77 @@ public sealed class StoryWriteService : IStoryWriteService
 
     public async Task<BaseResult> UpdateAudio(UpdateStoryAudioCommand command)
     {
-        throw new System.NotImplementedException();
+        //    public async Task AddImageToStory(int storyId, string imagePath)
+        //    {
+        //        Story story = await _storyRepository.GetStory(storyId);
+        //        story.SetImage(ImageHelper.ImageToByteArrayFromFilePath(imagePath));
+        //        await _storyRepository.UpdateStory(story);
+        //    }
+
+        //    public async Task AddImageToStoryByBase64(int storyId, byte[] base64)
+        //    {
+        //        Story story = await _storyRepository.GetStory(storyId);
+        //        story.SetImage(base64);
+        //        await _storyRepository.UpdateStory(story);
+        //    }
+
+        //    //[HttpPost("audio")]
+        //    //[AllowAnonymous]
+        //    //public async Task<IActionResult> AddAudioForStory([FromBody] CreateAudioModelcommand audio)
+        //    //{
+        //    //    Guid newAudioId = Guid.NewGuid();
+        //    //    DateTimeOffset currentDate = DateTimeOffset.Now;
+        //    //    StoryAudio storyAudio = new(newAudioId, currentDate.Date, audio.Name);
+
+        //    //    SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + newAudioId + ".mp3");
+
+        //    //    int result = await _storyRepository.CreateAudio(storyAudio, user);
+        //    //    return Ok(result);
+        //    //}
+
+        //    //public static void SaveByteArrayToFileWithBinaryWriter(byte[] data, string filePath)
+        //    //{
+        //    //    using BinaryWriter writer = new(System.IO.File.OpenWrite(filePath));
+        //    //    writer.Write(data);
+        //    //}
+
+        //    //[HttpPut("audio")]
+        //    //public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudiocommand audio)
+        //    //{
+        //    //    StoryAudio existingAudio = await _storyRepository.GetAudioById(audio.AudioId);
+
+        //    //    if (existingAudio is null)
+        //    //        return NotFound("Audio not found");
+
+        //    //    SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + existingAudio.FileId + ".mp3");
+
+        //    //    return Ok();
+        //    //}
+        //}
     }
 
     public async Task<BaseResult> DeleteAudio(DeleteStoryAudioCommand command)
     {
-        throw new System.NotImplementedException();
+        var story = await _repository.GetStory(command.StoryId);
+
+        if (story is null)
+        {
+            return BaseResult.CreateFail(UserFriendlyMessages.StoryWasNotFound);
+        }
+
+        Guid? removedAudioId = story.ClearAllAudio();
+
+        if (removedAudioId.HasValue)
+        {
+            string path = "audios/" + removedAudioId + ".mp3";
+
+            if (System.IO.File.Exists(path))
+            {
+                System.IO.File.Delete(path);
+            }
+        }
+
+        return BaseResult.CreateSuccess();
     }
 
     public async Task<BaseResult> DeleteComment(DeleteCommentCommand command)
@@ -210,70 +275,4 @@ public sealed class StoryWriteService : IStoryWriteService
 
         return BaseResult.CreateSuccess();
     }
-
-    //    public async Task AddImageToStory(int storyId, string imagePath)
-    //    {
-    //        Story story = await _storyRepository.GetStory(storyId);
-    //        story.SetImage(ImageHelper.ImageToByteArrayFromFilePath(imagePath));
-    //        await _storyRepository.UpdateStory(story);
-    //    }
-
-    //    public async Task AddImageToStoryByBase64(int storyId, byte[] base64)
-    //    {
-    //        Story story = await _storyRepository.GetStory(storyId);
-    //        story.SetImage(base64);
-    //        await _storyRepository.UpdateStory(story);
-    //    }
-
-    //    //[HttpPost("audio")]
-    //    //[AllowAnonymous]
-    //    //public async Task<IActionResult> AddAudioForStory([FromBody] CreateAudioModelcommand audio)
-    //    //{
-    //    //    Guid newAudioId = Guid.NewGuid();
-    //    //    DateTimeOffset currentDate = DateTimeOffset.Now;
-    //    //    StoryAudio storyAudio = new(newAudioId, currentDate.Date, audio.Name);
-
-    //    //    SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + newAudioId + ".mp3");
-
-    //    //    int result = await _storyRepository.CreateAudio(storyAudio, user);
-    //    //    return Ok(result);
-    //    //}
-
-    //    //public static void SaveByteArrayToFileWithBinaryWriter(byte[] data, string filePath)
-    //    //{
-    //    //    using BinaryWriter writer = new(System.IO.File.OpenWrite(filePath));
-    //    //    writer.Write(data);
-    //    //}
-
-    //    //[HttpPut("audio")]
-    //    //public async Task<IActionResult> ChangeAudioForStory([FromBody] UpdateAudiocommand audio)
-    //    //{
-    //    //    StoryAudio existingAudio = await _storyRepository.GetAudioById(audio.AudioId);
-
-    //    //    if (existingAudio is null)
-    //    //        return NotFound("Audio not found");
-
-    //    //    SaveByteArrayToFileWithBinaryWriter(audio.Audio, "audios/" + existingAudio.FileId + ".mp3");
-
-    //    //    return Ok();
-    //    //}
-
-    //    //[HttpDelete("audio")]
-    //    //public async Task<IActionResult> DeleteAudioForStory([FromBody] int[] audioIds)
-    //    //{
-    //    //    StoryAudio existingAudio = await _storyRepository.GetAudioById(audioIds[0]);
-
-    //    //    if (existingAudio is null)
-    //    //        return NotFound("Audio not found");
-
-    //    //    bool result = await _storyRepository.DeleteAudio(audioIds, user);
-
-    //    //    string path = "audios/" + existingAudio.FileId + ".mp3";
-
-    //    //    if (!result || !System.IO.File.Exists(path)) return NoContent();
-
-    //    //    System.IO.File.Delete(path);
-    //    //    return Ok();
-    //    //}
-    //}
 }
