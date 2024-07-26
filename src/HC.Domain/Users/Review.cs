@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace HC.Domain.Users;
+﻿namespace HC.Domain.Users;
 
 public sealed class Review : Entity<ReviewId>
 {

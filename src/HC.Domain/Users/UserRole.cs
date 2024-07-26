@@ -21,6 +21,11 @@ public sealed record class UserRole : IValueObject<UserRoleEnum>
     public bool IsReader => Value == UserRoleEnum.Admin;
     public bool IsPublisher => Value == UserRoleEnum.Admin;
 
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
+
     private UserRole()
     {
     }
