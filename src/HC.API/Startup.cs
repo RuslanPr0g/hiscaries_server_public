@@ -32,11 +32,13 @@ public class Startup
 
         services.AddSerilog();
 
+        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(SaveChangesPipelineBehavior<,>));
+
         services.AddMediatR((cfg) =>
         {
             // TODO: it takes multiple assemblies, maybe separate read and write projects into two?
             cfg.RegisterServicesFromAssemblies(typeof(RegisterUserCommandHandler).Assembly);
-        }).AddScoped(typeof(IPipelineBehavior<,>), typeof(ISaveChangesPipelineBehavior<,>));
+        });
 
         services.AddLogging();
 

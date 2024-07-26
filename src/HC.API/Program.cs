@@ -23,6 +23,7 @@ public class Program
                     .CreateLogger();
 
             Log.Fatal(ex, "Host terminated unexpectedly");
+            throw;
         }
         finally
         {

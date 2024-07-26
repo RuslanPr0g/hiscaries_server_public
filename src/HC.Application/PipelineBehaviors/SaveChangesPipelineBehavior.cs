@@ -4,14 +4,14 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-public sealed class ISaveChangesPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class SaveChangesPipelineBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull
 {
-    private readonly ILogger<ISaveChangesPipelineBehavior<TRequest, TResponse>> _logger;
+    private readonly ILogger<SaveChangesPipelineBehavior<TRequest, TResponse>> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
-    public ISaveChangesPipelineBehavior(
-        ILogger<ISaveChangesPipelineBehavior<TRequest, TResponse>> logger,
+    public SaveChangesPipelineBehavior(
+        ILogger<SaveChangesPipelineBehavior<TRequest, TResponse>> logger,
         IUnitOfWork unitOfWork)
     {
         _logger = logger;
@@ -20,8 +20,8 @@ public sealed class ISaveChangesPipelineBehavior<TRequest, TResponse> : IPipelin
 
     public async Task<TResponse> Handle(
         TRequest request,
-        CancellationToken cancellationToken,
-        RequestHandlerDelegate<TResponse> next)
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Handling {typeof(TRequest).Name}");
 
