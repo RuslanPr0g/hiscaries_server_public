@@ -9,13 +9,13 @@ public sealed class ReviewReadModel
     public string Message { get; init; }
     public string Username { get; init; }
 
-    public static ReviewReadModel FromDomainModel(Review review, User publisher, User reviewer)
+    public static ReviewReadModel FromDomainModel(Review review, UserSimpleReadModel publisher, UserSimpleReadModel reviewer)
     {
         return new ReviewReadModel
         {
             Id = review.Id,
-            Publisher = UserSimpleReadModel.FromDomainModel(publisher),
-            Reviewer = UserSimpleReadModel.FromDomainModel(reviewer),
+            Publisher = publisher,
+            Reviewer = reviewer,
             Message = review.Message,
             Username = review.Username,
         };

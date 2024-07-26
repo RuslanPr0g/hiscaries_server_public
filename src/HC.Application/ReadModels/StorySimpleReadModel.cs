@@ -15,6 +15,17 @@ public sealed class StorySimpleReadModel
 
     public static StorySimpleReadModel FromDomainModel(Story story)
     {
-        throw new NotImplementedException();
+        return new StorySimpleReadModel
+        {
+            Id = story.Id,
+            Title = story.Title,
+            Description = story.Description,
+            AuthorName = story.AuthorName,
+            AgeLimit = story.AgeLimit,
+            ImagePreview = story.ImagePreview,
+            DatePublished = story.DatePublished,
+            DateWritten = story.DateWritten,
+            Publisher = story.Publisher.Username,
+        };
     }
 }

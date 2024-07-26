@@ -1,6 +1,7 @@
 ﻿using HC.Domain.Stories;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public sealed class StoryReadModel
 {
@@ -23,8 +24,26 @@ public sealed class StoryReadModel
 
     public IEnumerable<StoryAudioReadModel> Audios { get; set; }
 
-    public static StoryReadModel FromDomainModel(Story story)
+    public static StoryReadModel FromDomainModel(Story story, byte[] audio, double averageScore, int totalReadCount)
     {
-        throw new NotImplementedException();
+        return new StoryReadModel
+        {
+            Id = story.Id,
+            Title = story.Title,
+            Description = story.Description,
+            AuthorName = story.AuthorName,
+            AgeLimit = story.AgeLimit,
+            ImagePreview = story.ImagePreview,
+            Audio = audio,
+            DatePublished = story.DatePublished,
+            DateWritten = story.DateWritten,
+            Publisher = UserReadModel.FromDomainModel(story.Publisher),
+            Genres = story.Genres.Select(GenreReadModel.FromDomainModel),
+            Pages = story.Contents.Select(StoryPageReadModel.FromDomainModel),
+            AverageScore = averageScore,
+            CommentCount = story.Comments.Count,
+            ReadCount = totalReadCount,
+            PageCount = story.Contents.Count
+        };
     }
 }

@@ -1,13 +1,14 @@
 ﻿using HC.Domain.Users;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public sealed class UserReadModel
 {
     public Guid Id { get; set; }
     public string Username { get; set; }
     public DateTime AccountCreated { get; set; }
-    public string BirthDate { get; set; }
+    public DateTime BirthDate { get; set; }
     public int Age { get; set; }
     public bool Banned { get; set; }
     public string Role { get; set; }
@@ -18,8 +19,27 @@ public sealed class UserReadModel
     public IEnumerable<ReviewReadModel> Reviews { get; set; }
     public UserReadHistoryReadModel ReadHistory { get; set; }
 
-    public static UserReadModel FromDomainModel(User user)
+    public static UserReadModel FromDomainModel(User user, int totalStories, int totalReads, double averageScore)
     {
-        throw new NotImplementedException();
+        return new UserReadModel
+        {
+            Id = user.Id,
+            Username = user.Username,
+            AccountCreated = user.AccountCreated,
+            BirthDate = user.BirthDate,
+            Age = DateTime.UtcNow.Year - user.BirthDate.Year,
+            Banned = user.Banned,
+            Role = user.Role.ToString(),
+            TotalStories = totalStories,
+            TotalReads = totalReads,
+            AverageScore = averageScore,
+            BookmarkedStories = user.BookMarks.Select(StoryBookMarkReadModel.FromDomainModel),
+            Reviews = user.Reviews.Select(x =>
+                ReviewReadModel.FromDomainModel(x,
+                // TODO: how the hell am I supposed to fill in info for both of them?
+                UserSimpleReadModel.FromDomainModel(user, totalStories, totalReads, averageScore),
+                UserSimpleReadModel.FromDomainModel(user, totalStories, totalReads, averageScore))),
+            ReadHistory = UserReadHistoryReadModel.FromDomainModel(user.ReadHistory),
+        };
     }
 }
