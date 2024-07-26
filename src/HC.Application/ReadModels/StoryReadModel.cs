@@ -24,7 +24,7 @@ public sealed class StoryReadModel
 
     public IEnumerable<StoryAudioReadModel> Audios { get; set; }
 
-    public static StoryReadModel FromDomainModel(Story story, byte[] audio, double averageScore, int totalReadCount)
+    public static StoryReadModel FromDomainModel(Story story, int totalReadCount)
     {
         return new StoryReadModel
         {
@@ -34,13 +34,12 @@ public sealed class StoryReadModel
             AuthorName = story.AuthorName,
             AgeLimit = story.AgeLimit,
             ImagePreview = story.ImagePreview,
-            Audio = audio,
             DatePublished = story.DatePublished,
             DateWritten = story.DateWritten,
             Publisher = UserReadModel.FromDomainModel(story.Publisher),
             Genres = story.Genres.Select(GenreReadModel.FromDomainModel),
             Pages = story.Contents.Select(StoryPageReadModel.FromDomainModel),
-            AverageScore = averageScore,
+            AverageScore = story.Comments.Average(x => x.Score),
             CommentCount = story.Comments.Count,
             ReadCount = totalReadCount,
             PageCount = story.Contents.Count

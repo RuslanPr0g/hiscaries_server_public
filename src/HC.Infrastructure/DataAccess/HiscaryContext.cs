@@ -12,6 +12,7 @@ public class HiscaryContext : DbContext
     }
 
     public DbSet<User> Users { get; set; }
+    public DbSet<UserReadHistory> ReadHistory { get; set; }
     public DbSet<Story> Stories { get; set; }
     public DbSet<Genre> Genres { get; set; }
     public DbSet<RefreshToken> RefreshTokens { get; set; }
