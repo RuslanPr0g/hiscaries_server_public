@@ -15,6 +15,9 @@ public sealed class EFStoryWriteRepository : IStoryWriteRepository
         _context = context;
     }
 
+    public async Task<Genre?> GetGenre(GenreId genreId) =>
+        await _context.Genres.FirstOrDefaultAsync(x => x.Id == genreId);
+
     public async Task AddGenre(Genre genre) => await _context.Genres.AddAsync(genre);
 
     public async Task AddStory(Story story) =>

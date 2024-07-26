@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace HC.Application.Stories.Command;
 
-public class UpdateStoryCommand : IRequest<UpdateStoryInfoResult>
+public class UpdateStoryCommand : IRequest<BaseResult>
 {
     public Guid PublisherId { get; set; }
 
