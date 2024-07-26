@@ -1,5 +1,6 @@
 ﻿using HC.Domain.Stories;
 using HC.Domain.Users;
+using HC.Infrastructure.Configurations;
 using Microsoft.EntityFrameworkCore;
 
 namespace HC.Infrastructure.DataAccess;
@@ -17,5 +18,7 @@ public class HiscaryContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(UserConfigurations).Assembly);
     }
 }

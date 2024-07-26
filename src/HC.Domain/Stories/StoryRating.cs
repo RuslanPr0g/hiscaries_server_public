@@ -27,6 +27,7 @@ public sealed class StoryRating : Entity<StoryRatingId>
 
     public StoryId StoryId { get; init; }
     public UserId UserId { get; init; }
+    public User User { get; init; }
     public int Score { get; private set; }
 
     internal void UpdateScore(int score)
