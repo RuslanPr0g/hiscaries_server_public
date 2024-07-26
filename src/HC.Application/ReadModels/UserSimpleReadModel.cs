@@ -28,4 +28,17 @@ public sealed class UserSimpleReadModel
             AverageScore = averageScore
         };
     }
+
+    public static UserSimpleReadModel FromDomainModel(User user)
+    {
+        return new()
+        {
+            Id = user.Id,
+            Username = user.Username,
+            BirthDate = user.BirthDate,
+            Age = DateTime.UtcNow.Year - user.BirthDate.Year,
+            Banned = user.Banned,
+            Role = user.Role.ToString(),
+        };
+    }
 }

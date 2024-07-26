@@ -42,4 +42,24 @@ public sealed class UserReadModel
             ReadHistory = UserReadHistoryReadModel.FromDomainModel(user.ReadHistory),
         };
     }
+
+    public static UserReadModel FromDomainModel(User user)
+    {
+        return new UserReadModel
+        {
+            Id = user.Id,
+            Username = user.Username,
+            AccountCreated = user.AccountCreated,
+            BirthDate = user.BirthDate,
+            Age = DateTime.UtcNow.Year - user.BirthDate.Year,
+            Banned = user.Banned,
+            Role = user.Role.ToString(),
+            BookmarkedStories = user.BookMarks.Select(StoryBookMarkReadModel.FromDomainModel),
+            Reviews = user.Reviews.Select(x =>
+                ReviewReadModel.FromDomainModel(x,
+                UserSimpleReadModel.FromDomainModel(user),
+                UserSimpleReadModel.FromDomainModel(user))),
+            ReadHistory = UserReadHistoryReadModel.FromDomainModel(user.ReadHistory),
+        };
+    }
 }
