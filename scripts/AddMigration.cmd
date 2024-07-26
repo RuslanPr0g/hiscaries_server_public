@@ -1,3 +1,3 @@
 cd ../src
-dotnet ef migrations add %1 -p HC.Infrastructure/HC.Infrastructure.csproj -s HC.API/HC.API.csproj -c HiscaryContext
+dotnet ef migrations add %1 --startup-project HC.API/HC.API.csproj --project HC.Infrastructure/HC.Infrastructure.csproj -c HiscaryContext
 cd ../scripts

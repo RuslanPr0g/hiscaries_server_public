@@ -10,9 +10,9 @@ internal class StoryRatingConfigurations : IEntityTypeConfiguration<StoryRating>
 {
     public void Configure(EntityTypeBuilder<StoryRating> builder)
     {
-        builder.ConfigureEntity<StoryRating, StoryRatingId>();
-        builder.Property(c => c.UserId).HasConversion(new IdentityConverter());
-        builder.Property(c => c.StoryId).HasConversion(new IdentityConverter());
+        builder.ConfigureEntity<StoryRating, StoryRatingId, StoryRatingIdentityConverter>();
+        builder.Property(c => c.UserId).HasConversion(new UserIdentityConverter());
+        builder.Property(c => c.StoryId).HasConversion(new StoryIdentityConverter());
 
         builder
             .HasOne(sr => sr.User)

@@ -1,4 +1,5 @@
 ﻿using HC.Domain.Stories;
+using HC.Infrastructure.Configurations.Converters;
 using HC.Infrastructure.Extentions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,6 +10,6 @@ internal class GenreConfigurations : IEntityTypeConfiguration<Genre>
 {
     public void Configure(EntityTypeBuilder<Genre> builder)
     {
-        builder.ConfigureEntity<Genre, GenreId>();
+        builder.ConfigureEntity<Genre, GenreId, GenreIdentityConverter>();
     }
 }

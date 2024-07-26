@@ -10,8 +10,8 @@ internal class StoryConfigurations : IEntityTypeConfiguration<Story>
 {
     public void Configure(EntityTypeBuilder<Story> builder)
     {
-        builder.ConfigureEntity<Story, StoryId>();
-        builder.Property(c => c.PublisherId).HasConversion(new IdentityConverter());
+        builder.ConfigureEntity<Story, StoryId, StoryIdentityConverter>();
+        builder.Property(c => c.PublisherId).HasConversion(new UserIdentityConverter());
 
         builder
             .HasOne(s => s.Publisher)

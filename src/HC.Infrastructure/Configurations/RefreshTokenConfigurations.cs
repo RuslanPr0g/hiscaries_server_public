@@ -1,4 +1,5 @@
 ﻿using HC.Domain.Users;
+using HC.Infrastructure.Configurations.Converters;
 using HC.Infrastructure.Extentions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -9,6 +10,6 @@ internal class RefreshTokenConfigurations : IEntityTypeConfiguration<RefreshToke
 {
     public void Configure(EntityTypeBuilder<RefreshToken> builder)
     {
-        builder.ConfigureEntity<RefreshToken, RefreshTokenId>();
+        builder.ConfigureEntity<RefreshToken, RefreshTokenId, RefreshTokenIdentityConverter>();
     }
 }

@@ -4,11 +4,12 @@ using System;
 
 namespace HC.Infrastructure.Configurations.Converters;
 
-internal class IdentityConverter : ValueConverter<Identity, Guid>
+internal class IdentityConverter<TIdentity> : ValueConverter<TIdentity, Guid>
+    where TIdentity : Identity
 {
-    internal IdentityConverter() : base(
+    internal IdentityConverter(Func<Guid, TIdentity> generator) : base(
         identity => identity.Value,
-        value => new Identity(value))
+        value => generator.Invoke(value))
     {
     }
 }

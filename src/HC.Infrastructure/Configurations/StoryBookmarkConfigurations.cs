@@ -10,8 +10,8 @@ internal class StoryBookmarkConfigurations : IEntityTypeConfiguration<UserStoryB
 {
     public void Configure(EntityTypeBuilder<UserStoryBookMark> builder)
     {
-        builder.ConfigureEntity<UserStoryBookMark, UserStoryBookMarkId>();
-        builder.Property(c => c.StoryId).HasConversion(new IdentityConverter());
-        builder.Property(c => c.UserId).HasConversion(new IdentityConverter());
+        builder.ConfigureEntity<UserStoryBookMark, UserStoryBookMarkId, UserStoryBookMarkIdentityConverter>();
+        builder.Property(c => c.StoryId).HasConversion(new StoryIdentityConverter());
+        builder.Property(c => c.UserId).HasConversion(new UserIdentityConverter());
     }
 }

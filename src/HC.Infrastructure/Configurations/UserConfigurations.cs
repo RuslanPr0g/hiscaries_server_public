@@ -10,8 +10,8 @@ internal class UserConfigurations : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ConfigureEntity<User, UserId>();
-        builder.Property(c => c.RefreshTokenId).HasConversion(new IdentityConverter());
+        builder.ConfigureEntity<User, UserId, UserIdentityConverter>();
+        builder.Property(c => c.RefreshTokenId).HasConversion(new RefreshTokenIdentityConverter());
 
         builder.Property(x => x.Role).HasConversion(new UserRoleConverter());
 

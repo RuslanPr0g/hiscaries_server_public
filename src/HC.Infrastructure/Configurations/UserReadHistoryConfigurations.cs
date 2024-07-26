@@ -10,9 +10,9 @@ internal class UserReadHistoryConfigurations : IEntityTypeConfiguration<UserRead
 {
     public void Configure(EntityTypeBuilder<UserReadHistory> builder)
     {
-        builder.ConfigureEntity<UserReadHistory, UserReadHistoryId>();
-        builder.Property(c => c.UserId).HasConversion(new IdentityConverter());
-        builder.Property(c => c.StoryId).HasConversion(new IdentityConverter());
+        builder.ConfigureEntity<UserReadHistory, UserReadHistoryId, UserReadHistoryIdentityConverter>();
+        builder.Property(c => c.UserId).HasConversion(new UserIdentityConverter());
+        builder.Property(c => c.StoryId).HasConversion(new StoryIdentityConverter());
 
         builder
             .HasOne(urh => urh.Story)

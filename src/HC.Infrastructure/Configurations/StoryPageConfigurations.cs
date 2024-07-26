@@ -10,6 +10,6 @@ internal class StoryPageConfigurations : IEntityTypeConfiguration<StoryPage>
     public void Configure(EntityTypeBuilder<StoryPage> builder)
     {
         builder.HasKey(sp => new { sp.StoryId, sp.Page });
-        builder.Property(c => c.StoryId).HasConversion(new IdentityConverter());
+        builder.Property(c => c.StoryId).HasConversion(new StoryIdentityConverter());
     }
 }

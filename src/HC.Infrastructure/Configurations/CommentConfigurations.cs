@@ -10,9 +10,9 @@ internal class CommentConfigurations : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {
-        builder.ConfigureEntity<Comment, CommentId>();
-        builder.Property(c => c.StoryId).HasConversion(new IdentityConverter());
-        builder.Property(c => c.UserId).HasConversion(new IdentityConverter());
+        builder.ConfigureEntity<Comment, CommentId, CommentIdentityConverter>();
+        builder.Property(c => c.StoryId).HasConversion(new StoryIdentityConverter());
+        builder.Property(c => c.UserId).HasConversion(new UserIdentityConverter());
 
         builder
             .HasOne(c => c.User)

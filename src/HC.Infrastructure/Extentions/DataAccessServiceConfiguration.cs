@@ -21,18 +21,17 @@ public static class DataAccessServiceConfiguration
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        string mainConnectionString = connection.GetConnectionString("PostgresEF");
+        var mainConnectionString = connection.GetConnectionString("PostgresEF");
         services.AddDbContext<HiscaryContext>(options =>
         {
             options.UseNpgsql(mainConnectionString, b => { b.MigrationsAssembly("HC.Infrastructure"); });
         });
 
-        // Migrate on startup
-        //using (var scope = host.Services.CreateScope())
-        //{
-        //    var db = scope.ServiceProvider.GetRequiredService<HiscaryContext>();
-        //    db.Database.Migrate();
-        //}
+        using (var scope = services.BuildServiceProvider().CreateScope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<HiscaryContext>();
+            db.Database.Migrate();
+        }
 
         return services;
     }

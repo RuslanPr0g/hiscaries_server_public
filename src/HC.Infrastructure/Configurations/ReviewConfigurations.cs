@@ -10,9 +10,9 @@ internal class ReviewConfigurations : IEntityTypeConfiguration<Review>
 {
     public void Configure(EntityTypeBuilder<Review> builder)
     {
-        builder.ConfigureEntity<Review, ReviewId>();
-        builder.Property(c => c.PublisherId).HasConversion(new IdentityConverter());
-        builder.Property(c => c.ReviewerId).HasConversion(new IdentityConverter());
+        builder.ConfigureEntity<Review, ReviewId, ReviewIdentityConverter>();
+        builder.Property(c => c.PublisherId).HasConversion(new UserIdentityConverter());
+        builder.Property(c => c.ReviewerId).HasConversion(new UserIdentityConverter());
 
         builder
             .HasOne(r => r.Reviewer)
