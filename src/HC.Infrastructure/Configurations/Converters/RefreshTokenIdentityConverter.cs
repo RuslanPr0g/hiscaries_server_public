@@ -1,8 +1,8 @@
 ﻿namespace HC.Infrastructure.Configurations.Converters;
 
-internal class RefreshTokenIdentityConverter : IdentityConverter<RefreshTokenId>
+public class RefreshTokenIdentityConverter : IdentityConverter<RefreshTokenId>
 {
-    internal RefreshTokenIdentityConverter() :
+    public RefreshTokenIdentityConverter() :
         base((x) => new RefreshTokenId(x))
     {
     }

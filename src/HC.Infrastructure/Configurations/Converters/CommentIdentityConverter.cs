@@ -2,9 +2,9 @@
 
 namespace HC.Infrastructure.Configurations.Converters;
 
-internal class CommentIdentityConverter : IdentityConverter<CommentId>
+public class CommentIdentityConverter : IdentityConverter<CommentId>
 {
-    internal CommentIdentityConverter() : 
+    public CommentIdentityConverter() : 
         base((x) => new CommentId(x))
     {
     }

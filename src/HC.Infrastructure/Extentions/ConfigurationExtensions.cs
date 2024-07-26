@@ -4,16 +4,23 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HC.Infrastructure.Extentions;
 
-internal static class ConfigurationExtensions
+public static class ConfigurationExtensions
 {
-    internal static EntityTypeBuilder<TEntity> ConfigureEntity<TEntity, TIdentity, TIdentityConverter>(
-        this EntityTypeBuilder<TEntity> builder)
+    public static EntityTypeBuilder<TEntity> ConfigureEntity<TEntity, TIdentity, TIdentityConverter>(
+        this EntityTypeBuilder<TEntity> builder, TIdentityConverter? converter = null)
         where TEntity : Entity<TIdentity>
         where TIdentity : Identity
-        where TIdentityConverter : IdentityConverter<TIdentity>
+        where TIdentityConverter : IdentityConverter<TIdentity>, new()
     {
         builder.HasKey(u => u.Id);
-        builder.Property(u => u.Id).HasConversion(typeof(TIdentityConverter));
+        if (converter is null)
+        {
+            builder.Property(u => u.Id).HasConversion(new TIdentityConverter());
+        }
+        else
+        {
+            builder.Property(u => u.Id).HasConversion(converter);
+        }
         return builder;
     }
 }

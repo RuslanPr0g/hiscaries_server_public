@@ -2,9 +2,9 @@
 
 namespace HC.Infrastructure.Configurations.Converters;
 
-internal class StoryAudioIdentityConverter : IdentityConverter<StoryAudioId>
+public class StoryAudioIdentityConverter : IdentityConverter<StoryAudioId>
 {
-    internal StoryAudioIdentityConverter() :
+    public StoryAudioIdentityConverter() :
         base((x) => new StoryAudioId(x))
     {
     }

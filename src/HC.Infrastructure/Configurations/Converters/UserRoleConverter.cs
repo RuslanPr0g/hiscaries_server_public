@@ -4,7 +4,7 @@ using static HC.Domain.Users.UserRole;
 
 namespace HC.Infrastructure.Configurations.Converters;
 
-internal class UserRoleConverter : ValueConverter<UserRole, UserRoleEnum>
+public class UserRoleConverter : ValueConverter<UserRole, UserRoleEnum>
 {
     public UserRoleConverter() : base(
         v => v.Value,

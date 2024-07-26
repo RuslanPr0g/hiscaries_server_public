@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HC.Infrastructure.Configurations;
 
-internal class UserReadHistoryConfigurations : IEntityTypeConfiguration<UserReadHistory>
+public class UserReadHistoryConfigurations : IEntityTypeConfiguration<UserReadHistory>
 {
     public void Configure(EntityTypeBuilder<UserReadHistory> builder)
     {

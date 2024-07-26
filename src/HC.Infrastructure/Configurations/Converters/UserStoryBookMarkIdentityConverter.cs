@@ -1,8 +1,8 @@
 ﻿namespace HC.Infrastructure.Configurations.Converters;
 
-internal class UserStoryBookMarkIdentityConverter : IdentityConverter<UserStoryBookMarkId>
+public class UserStoryBookMarkIdentityConverter : IdentityConverter<UserStoryBookMarkId>
 {
-    internal UserStoryBookMarkIdentityConverter() :
+    public UserStoryBookMarkIdentityConverter() :
         base((x) => new UserStoryBookMarkId(x))
     {
     }

@@ -4,10 +4,10 @@ using System;
 
 namespace HC.Infrastructure.Configurations.Converters;
 
-internal class IdentityConverter<TIdentity> : ValueConverter<TIdentity, Guid>
+public class IdentityConverter<TIdentity> : ValueConverter<TIdentity, Guid>
     where TIdentity : Identity
 {
-    internal IdentityConverter(Func<Guid, TIdentity> generator) : base(
+    public IdentityConverter(Func<Guid, TIdentity> generator) : base(
         identity => identity.Value,
         value => generator.Invoke(value))
     {

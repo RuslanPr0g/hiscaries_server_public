@@ -2,9 +2,9 @@
 
 namespace HC.Infrastructure.Configurations.Converters;
 
-internal class UserIdentityConverter : IdentityConverter<UserId>
+public class UserIdentityConverter : IdentityConverter<UserId>
 {
-    internal UserIdentityConverter() :
+    public UserIdentityConverter() :
         base((x) => new UserId(x))
     {
     }

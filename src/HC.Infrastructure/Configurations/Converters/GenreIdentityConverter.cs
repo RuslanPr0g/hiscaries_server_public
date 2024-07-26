@@ -2,9 +2,9 @@
 
 namespace HC.Infrastructure.Configurations.Converters;
 
-internal class GenreIdentityConverter : IdentityConverter<GenreId>
+public class GenreIdentityConverter : IdentityConverter<GenreId>
 {
-    internal GenreIdentityConverter() :
+    public GenreIdentityConverter() :
         base((x) => new GenreId(x))
     {
     }

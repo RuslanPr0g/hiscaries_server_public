@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HC.Infrastructure.Configurations;
 
-internal class StoryRatingConfigurations : IEntityTypeConfiguration<StoryRating>
+public class StoryRatingConfigurations : IEntityTypeConfiguration<StoryRating>
 {
     public void Configure(EntityTypeBuilder<StoryRating> builder)
     {

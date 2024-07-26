@@ -2,9 +2,9 @@
 
 namespace HC.Infrastructure.Configurations.Converters;
 
-internal class StoryRatingIdentityConverter : IdentityConverter<StoryRatingId>
+public class StoryRatingIdentityConverter : IdentityConverter<StoryRatingId>
 {
-    internal StoryRatingIdentityConverter() :
+    public StoryRatingIdentityConverter() :
         base((x) => new StoryRatingId(x))
     {
     }

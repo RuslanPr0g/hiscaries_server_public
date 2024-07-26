@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HC.Infrastructure.Configurations;
 
-internal class StoryPageConfigurations : IEntityTypeConfiguration<StoryPage>
+public class StoryPageConfigurations : IEntityTypeConfiguration<StoryPage>
 {
     public void Configure(EntityTypeBuilder<StoryPage> builder)
     {

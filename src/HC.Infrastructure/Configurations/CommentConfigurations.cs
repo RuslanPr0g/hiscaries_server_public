@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HC.Infrastructure.Configurations;
 
-internal class CommentConfigurations : IEntityTypeConfiguration<Comment>
+public class CommentConfigurations : IEntityTypeConfiguration<Comment>
 {
     public void Configure(EntityTypeBuilder<Comment> builder)
     {

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HC.Infrastructure.Configurations;
 
-internal class StoryBookmarkConfigurations : IEntityTypeConfiguration<UserStoryBookMark>
+public class StoryBookmarkConfigurations : IEntityTypeConfiguration<UserStoryBookMark>
 {
     public void Configure(EntityTypeBuilder<UserStoryBookMark> builder)
     {

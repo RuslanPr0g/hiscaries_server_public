@@ -2,9 +2,9 @@
 
 namespace HC.Infrastructure.Configurations.Converters;
 
-internal class UserReadHistoryIdentityConverter : IdentityConverter<UserReadHistoryId>
+public class UserReadHistoryIdentityConverter : IdentityConverter<UserReadHistoryId>
 {
-    internal UserReadHistoryIdentityConverter() :
+    public UserReadHistoryIdentityConverter() :
         base((x) => new UserReadHistoryId(x))
     {
     }

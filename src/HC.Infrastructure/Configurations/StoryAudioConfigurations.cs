@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace HC.Infrastructure.Configurations;
 
-internal class StoryAudioConfigurations : IEntityTypeConfiguration<StoryAudio>
+public class StoryAudioConfigurations : IEntityTypeConfiguration<StoryAudio>
 {
     public void Configure(EntityTypeBuilder<StoryAudio> builder)
     {
