@@ -15,11 +15,11 @@ public static class ConfigurationExtensions
         builder.HasKey(u => u.Id);
         if (converter is null)
         {
-            builder.Property(u => u.Id).HasConversion(new TIdentityConverter());
+            builder.Property(u => u.Id).HasConversion(new TIdentityConverter()).ValueGeneratedOnAdd();
         }
         else
         {
-            builder.Property(u => u.Id).HasConversion(converter);
+            builder.Property(u => u.Id).HasConversion(converter).ValueGeneratedOnAdd();
         }
         return builder;
     }
