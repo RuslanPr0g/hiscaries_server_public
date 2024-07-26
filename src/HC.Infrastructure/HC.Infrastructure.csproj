@@ -18,4 +18,8 @@
         <ProjectReference Include="..\HC.Domain\HC.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
 </Project>
