@@ -115,7 +115,7 @@ public class StoryV1Controller : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost]
+    [HttpPost("addnew")]
     public async Task<IActionResult> AddStory([FromBody] StoryUpdateInfoRequest request)
     {
         string base64Image = request.ImagePreview;
@@ -239,7 +239,7 @@ public class StoryV1Controller : ControllerBase
         return (await _mediator.Send(command)).ToObjectResult();
     }
 
-    [HttpPost(APIConstants.DeleteComment)]
+    [HttpDelete(APIConstants.DeleteComment)]
     public async Task<IActionResult> DeleteComment([FromQuery] Guid commentId)
     {
         DeleteCommentCommand command = new()
@@ -250,7 +250,7 @@ public class StoryV1Controller : ControllerBase
         return (await _mediator.Send(command)).ToObjectResult();
     }
 
-    [HttpPost(APIConstants.DeleteStory)]
+    [HttpDelete(APIConstants.Story)]
     public async Task<IActionResult> DeleteStory([FromQuery] Guid storyId)
     {
         DeleteStoryCommand command = new()
