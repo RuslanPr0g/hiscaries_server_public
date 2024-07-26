@@ -6,3 +6,12 @@ services:
     build:
       context: .
       dockerfile: HC.API/Dockerfile
+
+  postgresdb:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123321
+      POSTGRES_DB: twosumdb
+    ports:
+      - "5432:5432"
