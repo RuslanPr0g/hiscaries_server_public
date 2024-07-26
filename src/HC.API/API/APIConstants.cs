@@ -24,7 +24,7 @@ public static class APIConstants
     public const string GetAllComments = "comment";
 
 
-    public const string Story = "api/v{version:apiVersion}/story";
+    public const string Story = "api/story";
     public const string GetPage = "page/{storyId}";
     public const string AddPage = "page";
     public const string Pages = "pages";
