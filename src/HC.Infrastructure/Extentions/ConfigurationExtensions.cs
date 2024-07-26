@@ -1,6 +1,7 @@
 ﻿using HC.Domain;
 using HC.Infrastructure.Configurations.Converters;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 
 namespace HC.Infrastructure.Extentions;
 
@@ -15,11 +16,11 @@ public static class ConfigurationExtensions
         builder.HasKey(u => u.Id);
         if (converter is null)
         {
-            builder.Property(u => u.Id).HasConversion(new TIdentityConverter()).ValueGeneratedOnAdd();
+            builder.Property(u => u.Id).HasConversion(new TIdentityConverter()).HasValueGenerator<GuidValueGenerator>();
         }
         else
         {
-            builder.Property(u => u.Id).HasConversion(converter).ValueGeneratedOnAdd();
+            builder.Property(u => u.Id).HasConversion(converter).HasValueGenerator<GuidValueGenerator>();
         }
         return builder;
     }
