@@ -1,0 +1,638 @@
+<div class="loading" *ngIf="IsLoading">
+  <div class="lds-grid">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
+
+<div class="error" *ngIf="errorMessage.length > 0">
+  <p>{{ errorMessage }}</p>
+</div>
+
+<div class="errorpage" *ngIf="IsError && !IsLoading">
+  Something went wrong... Try to <a href="/login">log in</a> again, please.
+</div>
+
+<div class="loaded" *ngIf="!IsLoading && !IsError">
+  <img
+    src="data:image/png;base64,{{ clickedStoryData.imagePreview }}"
+    *ngIf="clickedStoryData.imagePreview"
+    alt="story preview"
+    class="story_header_background"
+  />
+  <app-headerbar></app-headerbar>
+  <div class="centered">
+    <div class="buttons">
+      <button (click)="changeTab(1)" mat-raised-button color="primary">
+        Users
+      </button>
+      <button (click)="changeTab(2)" mat-raised-button color="primary">
+        Stories
+      </button>
+      <button (click)="changeTab(3)" mat-raised-button color="primary">
+        Genres
+      </button>
+      <button (click)="changeTab(4)" mat-raised-button color="primary">
+        Reports
+      </button>
+    </div>
+    <div class="users" *ngIf="currentTab === 1">
+      <h2>Users:</h2>
+      <table mat-table [dataSource]="userData" class="mat-elevation-z8 wmax">
+        <!-- Position Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>Id.</th>
+          <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef>Username.</th>
+          <td mat-cell *matCellDef="let element">{{ element.username }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email.</th>
+          <td mat-cell *matCellDef="let element">{{ element.email }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="birthDate">
+          <th mat-header-cell *matHeaderCellDef>Birth Date.</th>
+          <td mat-cell *matCellDef="let element">{{ element.birthDate }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="accountCreated">
+          <th mat-header-cell *matHeaderCellDef>Created.</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.accountCreated }}
+          </td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="banned">
+          <th mat-header-cell *matHeaderCellDef>Banned.</th>
+          <td mat-cell *matCellDef="let element">{{ element.banned }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsUser"></tr>
+        <tr
+          class="hover"
+          mat-row
+          (click)="clickUsers(row)"
+          *matRowDef="let row; columns: displayedColumnsUser"
+        ></tr>
+      </table>
+
+      <div class="modalwin" *ngIf="showUserModal">
+        <div class="userdata">
+          <form
+            [formGroup]="formuserdata"
+            autocomplete="off"
+            class="form"
+            (submit)="updateUserData(false)"
+          >
+            <div class="control block-cube block-input">
+              <input
+                formControlName="email"
+                name="email"
+                placeholder="Email"
+                type="text"
+                required
+              />
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+            </div>
+            <div class="control block-cube block-input">
+              <input
+                formControlName="dob"
+                name="dob"
+                value="1000-01-01"
+                type="date"
+                required
+              />
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+            </div>
+
+            <button class="btn block-cube block-cube-hover" type="submit">
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="text">Update Profile Data</div>
+            </button>
+          </form>
+          <div class="d-flex justify-content-around">
+            <button
+              mat-raised-button
+              color="warn"
+              (click)="updateUserData(true)"
+            >
+              Block user
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="this.showUserModal = false"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stories" *ngIf="currentTab === 2">
+      <h2>Stories:</h2>
+      <table mat-table [dataSource]="storyData" class="mat-elevation-z8 wmax">
+        <!-- Position Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>Id.</th>
+          <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Title.</th>
+          <td mat-cell *matCellDef="let element">{{ element.title }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description.</th>
+          <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="written">
+          <th mat-header-cell *matHeaderCellDef>Written.</th>
+          <td mat-cell *matCellDef="let element">{{ element.dateWritten }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="published">
+          <th mat-header-cell *matHeaderCellDef>Published.</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.datePublished }}
+          </td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="author">
+          <th mat-header-cell *matHeaderCellDef>Author.</th>
+          <td mat-cell *matCellDef="let element">{{ element.authorName }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="publisher">
+          <th mat-header-cell *matHeaderCellDef>Publisher.</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.publisher.username }}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsStory"></tr>
+        <tr
+          class="hover"
+          mat-row
+          (click)="clickStories(row)"
+          *matRowDef="let row; columns: displayedColumnsStory"
+        ></tr>
+      </table>
+
+      <div class="modalwin" *ngIf="showStoryModal">
+        <div class="d-flex justify-content-around">
+          <form
+            [formGroup]="modifystory"
+            autocomplete="off"
+            class="form"
+            (submit)="modifyStoryInfo()"
+          >
+            <div class="control">
+              <h1>Modify a story</h1>
+            </div>
+
+            <div class="control block-cube block-input">
+              <input
+                formControlName="title"
+                name="title"
+                placeholder="Title"
+                type="title"
+                required
+              />
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+            </div>
+
+            <div class="control block-cube block-input">
+              <input
+                formControlName="description"
+                name="description"
+                placeholder="Description"
+                type="description"
+                required
+              />
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+            </div>
+
+            <div class="control block-cube block-input">
+              <input
+                formControlName="authorname"
+                name="authorname"
+                placeholder="Author"
+                type="authorname"
+                required
+              />
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+            </div>
+
+            <div class="control block-cube block-input">
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner bg-efefef"></div>
+              </div>
+              <div class="genre-block">
+                <span class="genre-title">Genre</span>
+                <mat-form-field appearance="fill">
+                  <mat-select
+                    [(ngModel)]="selectedValueStoryGenre"
+                    multiple
+                    name="genre"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    <mat-option *ngFor="let genre of genres" [value]="genre.id">
+                      {{ genre.name }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+            </div>
+
+            <!-- 
+                        <div class='control block-cube block-input'>
+                            <input formControlName="genreid" name='genreid' placeholder='Genre' type='genreid' required>
+                            <div class='bg-top'>
+                                <div class='bg-inner'></div>
+                            </div>
+                            <div class='bg-right'>
+                                <div class='bg-inner'></div>
+                            </div>
+                            <div class='bg'>
+                                <div class='bg-inner'></div>
+                            </div>
+                        </div> -->
+
+            <div class="control block-cube block-input">
+              <input
+                formControlName="agelimit"
+                name="agelimit"
+                placeholder="Age Limit"
+                type="agelimit"
+                required
+              />
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+            </div>
+
+            <div class="file-upload">
+              <input
+                type="file"
+                (change)="uploadimage($event)"
+                class="fileInputProfile"
+              />
+            </div>
+
+            <button class="btn block-cube block-cube-hover" type="submit">
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="text">Apply</div>
+            </button>
+            <br />
+            <button
+              class="btn block-cube block-cube-red block-cube-hover"
+              type="button"
+              (click)="this.showStoryModal = false"
+            >
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="text">Cancel</div>
+            </button>
+            <br />
+            <button
+              class="btn block-cube block-cube-red block-cube-hover"
+              type="button"
+              (click)="deleteStoryData()"
+            >
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="text">Delete</div>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="genres" *ngIf="currentTab === 3">
+      <h2>Genres:</h2>
+      <button mat-raised-button color="primary" (click)="addGenreModal()">
+        Add new genre
+      </button>
+      <br />
+      <br />
+      <br />
+      <table mat-table [dataSource]="genreData" class="mat-elevation-z8 wmax">
+        <!-- Position Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>Id.</th>
+          <td mat-cell *matCellDef="let element">{{ element.id }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name.</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description.</th>
+          <td mat-cell *matCellDef="let element">
+            {{ element.description.substring(0, 40) }}...
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsGenre"></tr>
+        <tr
+          class="hover"
+          mat-row
+          (click)="clickGenres(row)"
+          *matRowDef="let row; columns: displayedColumnsGenre"
+        ></tr>
+      </table>
+
+      <div class="modalwin" *ngIf="showGenreModal">
+        <div class="genredata">
+          <form
+            [formGroup]="formgenredata"
+            autocomplete="off"
+            class="form"
+            (submit)="updateGenreData()"
+          >
+            <div class="control block-cube block-input">
+              <input
+                formControlName="name"
+                name="name"
+                placeholder="Name"
+                type="text"
+                required
+              />
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+            </div>
+            <div class="control block-cube block-input">
+              <input
+                formControlName="description"
+                name="description"
+                placeholder="Description"
+                type="text"
+                required
+              />
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+            </div>
+
+            <button class="btn block-cube block-cube-hover" type="submit">
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="text">Apply</div>
+            </button>
+          </form>
+          <div class="d-flex justify-content-around">
+            <button
+              mat-raised-button
+              color="warn"
+              (click)="deleteGenreData()"
+              *ngIf="!toAddGenre"
+            >
+              Delete genre
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="this.showGenreModal = false"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="reports" *ngIf="currentTab === 4">
+      <h2>Reports:</h2>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="showClosedReports()"
+        *ngIf="!isClosedReportsShowed"
+      >
+        Show closed reports
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="showPendingReports()"
+        *ngIf="isClosedReportsShowed"
+      >
+        Show pending reports
+      </button>
+      <br />
+      <br />
+      <br />
+      <table mat-table [dataSource]="reportsData" class="mat-elevation-z8 wmax">
+        <!-- Position Column -->
+        <ng-container matColumnDef="storyId">
+          <th mat-header-cell *matHeaderCellDef>Story Id.</th>
+          <td mat-cell *matCellDef="let element">{{ element.storyId }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="page">
+          <th mat-header-cell *matHeaderCellDef>Page.</th>
+          <td mat-cell *matCellDef="let element">{{ element.page }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status.</th>
+          <td mat-cell *matCellDef="let element">{{ element.status }}</td>
+        </ng-container>
+
+        <!-- Position Column -->
+        <ng-container matColumnDef="dateAdded">
+          <th mat-header-cell *matHeaderCellDef>Date Added.</th>
+          <td mat-cell *matCellDef="let element">{{ element.dateAdded }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumnsReport"></tr>
+        <tr
+          class="hover"
+          mat-row
+          (click)="clickReport(row)"
+          *matRowDef="let row; columns: displayedColumnsReport"
+        ></tr>
+      </table>
+
+      <div class="modalwin" *ngIf="showReportModal">
+        <div class="reportdata">
+          <form
+            [formGroup]="formreportdata"
+            autocomplete="off"
+            class="form"
+            (submit)="approveReportData()"
+          >
+            <div class="reportsModal" [innerHTML]="ReportedStoryPage"></div>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <button
+              class="btn block-cube block-cube-red block-cube-hover"
+              type="submit"
+            >
+              <div class="bg-top">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg-right">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="bg">
+                <div class="bg-inner"></div>
+              </div>
+              <div class="text">Approve (story is to be deleted)</div>
+            </button>
+          </form>
+          <div class="d-flex justify-content-around">
+            <button mat-raised-button color="primary" (click)="declineReport()">
+              Decline (report is to be declined)
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="this.showReportModal = false"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

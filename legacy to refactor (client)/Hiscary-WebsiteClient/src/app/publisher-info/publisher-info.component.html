@@ -1,0 +1,120 @@
+<div class="loading" *ngIf="IsLoading">
+    <div class="lds-grid">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div class="error" *ngIf="errorMessage.length > 0">
+    <p>{{ errorMessage }}</p>
+</div>
+
+<div class="errorpage" *ngIf="IsError && !IsLoading">
+    Something went wrong... Try to <a href="/login">log in</a> again, please.
+</div>
+
+
+<div class="loaded" *ngIf="!IsLoading && !IsError">
+    <app-headerbar></app-headerbar>
+
+    <section class="userdatasection" *ngIf="!IsError">
+        <div class="userdata">Username: {{ User.username }}</div>
+        <div class="userdata">Email: {{ User.email }}</div>
+        <div class="userdata">Age: {{ User.age }}</div>
+        <div class="userdata">Account Created: {{ User.accountCreated | date: 'MMM dd, yyyy'}}</div>
+        <div class="userdata">Total Reads: {{ User.totalReads }}</div>
+        <div class="userdata">Total Stories: {{ User.totalStories }}</div>
+        <div class="userdata">Average Score: {{ User.averageScore | number: '1.0-2' }}</div>
+        <br>
+    </section>
+
+    <section class="home-section">
+        <h1 class="text-center">Publisher's stories and reviews</h1>
+    </section>
+    <section class="sidebyside">
+        <div class="left">
+            <ul class="story-list">
+                <li class="story-list_item" *ngFor="let storyItem of StoryList">
+                    <a href="/story/info/{{storyItem.id}}" class="story">
+
+                        <div class="story_header">
+                            <img src="data:image/png;base64,{{ storyItem.imagePreview }}" alt="story preview" class="story_header_background">
+                            <div class="author">
+                                <div class="author_preview">
+                                </div>
+                                <div class="author_name">
+                                    {{ storyItem.authorName }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="story_footer">
+                            <h3 class="story_title">
+                                {{ storyItem.title }}
+                            </h3>
+                            <p class="story_description">
+                                {{ storyItem.description }}
+                            </p>
+                        </div>
+                    </a>
+                    <button mat-icon-button color="warn" class="edit-story" (click)="bookmark(storyItem.id)">
+                        <mat-icon>favorite</mat-icon>
+                    </button>
+                </li>
+            </ul>
+        </div>
+        <div class="right">
+            <section class="write-comment">
+                <form class="example-form">
+                    <mat-form-field class="example-full-width" appearance="fill" [style.width.%]=50>
+                        <mat-label>Leave a review</mat-label>
+                        <textarea matInput placeholder="Ex. It's a great person..." [(ngModel)]='CurrentReview' [ngModelOptions]="{standalone: true}"></textarea>
+                    </mat-form-field>
+                    <button mat-raised-button color="primary" class="addreview" (click)="addReview()">
+                        Publish
+                    </button>
+                </form>
+            </section>
+            <section class="reviews-section">
+                <ul class="review-list" *ngIf="ReviewList.length > 0 && !IsLoading">
+                    <li class="review-list_item" *ngFor="let reviewItem of ReviewList">
+                        <div class="review">
+                            <div class="review_header">
+                                <div class="author">
+                                    <div class="author_preview">
+                                    </div>
+                                    <p class="author_name">
+                                        {{ reviewItem.username }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="review_footer">
+                                <mat-expansion-panel hideToggle>
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-description>
+                                            {{ reviewItem.message | slice:0:15 }}...
+                                        </mat-panel-description>
+                                    </mat-expansion-panel-header>
+                                    <div class="expandedthing">
+                                        {{ reviewItem.message }}
+                                    </div>
+                                </mat-expansion-panel>
+                                <div class="edit-review" *ngIf="reviewItem.reviewerId == CurrentId">
+                                    <button mat-icon-button color="warn" (click)="removeReview(reviewItem.id)">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+        </div>
+    </section>
+</div>

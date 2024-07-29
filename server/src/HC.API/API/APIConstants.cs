@@ -25,6 +25,7 @@ public static class APIConstants
 
 
     public const string Story = "api/story";
+    // TODO: add verrsionaning for story
     public const string GetPage = "page/{storyId}";
     public const string AddPage = "page";
     public const string Pages = "pages";

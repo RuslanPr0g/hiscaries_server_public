@@ -1,0 +1,45 @@
+<div class="loaded" *ngIf="!IsLoading">
+    <app-headerbar></app-headerbar>
+
+    <ul class="story-list" *ngIf="StoryList.length > 0 && !IsLoading">
+        <li class="story-list_item" *ngFor="let storyItem of StoryList">
+            <a href="/story/info/{{storyItem.storyId}}" class="story">
+                <div class="story_header">
+                    <img src="data:image/png;base64,{{ storyItem.imagePreview }}" alt="story preview" class="story_header_background">
+                    <div class="author">
+                        <div class="author_preview">
+                        </div>
+                        <div class="author_name">
+                            {{ storyItem.authorName }}
+                        </div>
+                    </div>
+                </div>
+                <div class="meter red nostripes">
+                    <mat-progress-bar color="warn" mode="determinate" value="{{storyItem.percentage * 100}}"></mat-progress-bar>
+                </div>
+                <div class="story_footer">
+                    <h3 class="story_title">
+                        {{ storyItem.title }}
+                    </h3>
+                    <p class="story_description">
+                        {{ storyItem.description }}
+                    </p>
+                </div>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<div class="loading" *ngIf="IsLoading">
+    <div class="lds-grid">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>

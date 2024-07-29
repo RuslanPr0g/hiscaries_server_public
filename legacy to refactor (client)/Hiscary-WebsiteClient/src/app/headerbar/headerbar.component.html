@@ -1,0 +1,31 @@
+<header class="headerbar">
+    <a href="/" mat-fab color="primary" aria-label="Example icon button with a home icon">
+        <mat-icon>home</mat-icon>
+    </a>
+
+    <input id="searchBar" type="text" class="searchbar" placeholder="Search" (keyup.enter)="redirectToSearchPage($event)" [ngModel]="searchBarValue">
+
+    <nav id="navbar" class="navigation" role="navigation">
+        <input id="toggle1" type="checkbox" />
+        <label class="hamburger1" for="toggle1">
+          <div class="top"></div>
+          <div class="meat"></div>
+          <div class="bottom"></div>
+        </label>
+
+        <nav class="menu1">
+            <a href="/publish" class="header-link header-publish-link link1" *ngIf="isPublisher">Publish</a>
+
+            <a href="/admin" class="header-link header-publish-link link1" *ngIf="isAdmin">Admin</a>
+
+            <button (click)="becomePub()" class="header-link header-publish-link link1" *ngIf="isLoggedIn && !isPublisher && !isAdmin">Become Publisher</button>
+
+            <a href="/profile" class="header-link header-profile-link link1" *ngIf="isLoggedIn">Profile</a>
+            <a href="/history" class="header-link header-profile-link link1" *ngIf="isLoggedIn">History</a>
+            <a href="/bookmarks" class="header-link header-profile-link link1" *ngIf="isLoggedIn">Bookmarks</a>
+            <a href="/logout" class="header-link header-logout-link link1" *ngIf="isLoggedIn">Log Out</a>
+
+            <a href="/login" class="header-link header-login-link" *ngIf="!isLoggedIn">Log In</a>
+        </nav>
+    </nav>
+</header>

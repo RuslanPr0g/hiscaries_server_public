@@ -1,0 +1,159 @@
+a {
+    background-color: rgba(0, 0, 10, 0.2);
+    color: white;
+    font-size: 1.5em;
+}
+
+.errorpage {
+    padding: 5%;
+    color: red;
+    font-size: 2em;
+}
+
+.error {
+    display: flex;
+    justify-content: center;
+    color: red;
+  margin-top: 1.5em;
+  font-size: 1.5em;
+  position: fixed;
+  background-color: #183259e0;
+  padding: 20px;
+  left: 50%;
+  top: 0;
+}
+
+.storyinfo {
+    padding: 5%;
+    font-size: 1.5em;
+    line-height: 25px;
+}
+
+.storydata {
+    margin: 10px auto;
+}
+
+.big-btn {
+    height: 100%;
+    display: block;
+    text-align: center;
+}
+
+.two-screens {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.comments {
+    background-color: #183259e0;
+    min-height: 100vh;
+    padding-top: 2%;
+}
+
+.scoring {
+    margin-left: 20px;
+}
+
+.write-comment,
+.example-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    padding-top: 1%;
+}
+
+::ng-deep .mat-focused .mat-form-field-label {
+    /*change color of label*/
+    color: #673AB7 !important;
+}
+
+ ::ng-deep.mat-form-field-underline {
+    /*change color of underline*/
+    background-color: #673AB7 !important;
+}
+
+::ng-deep.mat-form-field-ripple {
+    /*change color of underline when focused*/
+    background-color: #673AB7 !important;
+    ;
+}
+
+.addcomment {
+    width: 20%;
+}
+
+.story_preview {
+    position: absolute;
+    width: 100%;
+    z-index: -1;
+    opacity: 0.1;
+    height: 100vh;
+}
+
+.comment-list_item {
+    list-style: none;
+}
+
+.comment {
+    background-color: #10101c96;
+    padding: 2%;
+    margin: 2%;
+    position: relative;
+    border-radius: 15px;
+}
+
+.author_name {
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.author {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.scoring {
+    display: flex;
+    justify-content: center;
+}
+
+.edit-comment {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+}
+
+.mat-expansion-panel-header.mat-expanded,
+.mat-expansion-panel-header.mat-expanded:hover {
+    background-color: #10101c96!important;
+}
+
+.mat-expansion-panel-header,
+.mat-expansion-panel-body {
+    background-color: #10101c96!important;
+    word-break: break-all!important;
+    margin-bottom: 10px;
+}
+
+.expandedthing {
+    word-break: break-all!important;
+}
+
+.mat-expansion-panel-header:hover {
+    background-color: #08080c96!important;
+}
+
+.mat-expansion-panel-body {
+    background-color: #10101c96!important;
+    word-break: break-all!important;
+}
+
+.mat-panel-description,
+.mat-expansion-panel-header {
+    background-color: #10101c96!important;
+}

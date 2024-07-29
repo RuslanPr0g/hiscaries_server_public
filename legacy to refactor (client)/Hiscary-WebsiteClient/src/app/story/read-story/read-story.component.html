@@ -1,0 +1,58 @@
+<div class="loading" *ngIf="IsLoading">
+  <div class="lds-grid">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</div>
+
+<div class="errorpage" *ngIf="IsError && !IsLoading">
+  Either there is no such story you're looking for or story has been deleted.
+</div>
+
+<div class="loaded" *ngIf="!IsLoading && !IsError">
+  <app-headerbar></app-headerbar>
+
+  <div class="readstory" *ngIf="!IsError">
+    <div class="book">
+      <div
+        class="book_content"
+        [innerHTML]="Pages[CurrentPage] && Pages[CurrentPage].content"
+      ></div>
+      <div class="book_navigation">
+        <div class="book_pagecount">
+          {{ CurrentPage + 1 }} / {{ Pages.length }}
+        </div>
+        <div class="book_buttons">
+          <button mat-raised-button color="warn" (click)="PrevPage()">
+            Prev
+          </button>
+          <button mat-raised-button color="primary" (click)="NextPage()">
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="report" *ngIf="!isReported && !isOwner">
+      <button mat-flat-button color="primary" (click)="startReport($event)" *ngIf="!isReportStarted">
+        Report this story content
+      </button>
+      <button mat-flat-button color="warn" (click)="reportStoryContent($event)" *ngIf="isReportStarted">
+        I am sure to report this story content
+      </button>
+    </div>
+    <div class="play-audio" *ngIf="IsAudioExist">
+      <button mat-flat-button color="primary" (click)="playStopAudio()">
+        <mat-icon>{{ IsAudioPlaying ? "stop" : "play_arrow" }}</mat-icon>
+        {{ IsAudioPlaying ? "Pause Audio" : "Play Audio" }}
+      </button>
+      <button (click)="fullStopAudio()" color="secondary" mat-flat-button>Full stop audio</button>
+    </div>
+  </div>
+</div>

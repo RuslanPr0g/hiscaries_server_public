@@ -1,0 +1,28 @@
+<app-headerbar></app-headerbar>
+
+<section class="home-section"></section>
+<section class="genrelist">
+  <ul class="genre-list">
+    <li class="genre-list_item" *ngFor="let genreItem of GenreList">
+      <a href="story/search/all?g={{ genreItem.name }}" class="genre">
+        <div class="genre_footer">
+          <h3 class="genre_name">
+            {{ genreItem.name }}
+          </h3>
+        </div>
+      </a>
+    </li>
+  </ul>
+</section>
+
+<!-- Best to read goes here -->
+<section class="home-section"></section>
+<app-show-story></app-show-story>
+<div class="cookie-message" *ngIf="!cookieMessageDismissed">
+  <p>
+    We use cookies to ensure you get the best experience on our website. Please
+    read our <a href="#" (click)="openCookies()">Cookie Policy</a> to learn
+    more.
+  </p>
+  <button (click)="dismissCookieMessage()">Dismiss</button>
+</div>

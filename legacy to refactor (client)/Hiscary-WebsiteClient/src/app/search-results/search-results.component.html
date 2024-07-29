@@ -1,0 +1,52 @@
+<div class="loaded" *ngIf="!IsLoading">
+    <app-headerbar></app-headerbar>
+
+    <ul class="story-list" *ngIf="StoryList.length > 0 && !IsLoading">
+        <li class="story-list_item" *ngFor="let storyItem of StoryList">
+            <a href="/story/info/{{storyItem.id}}" class="story">
+                <div class="story_header">
+                    <img src="data:image/png;base64,{{ storyItem.imagePreview }}" alt="story preview" class="story_header_background">
+                    <div class="author">
+                        <div class="author_preview">
+                        </div>
+                        <div class="author_name">
+                            {{ storyItem.authorName }}
+                        </div>
+                    </div>
+                </div>
+                <div class="story_footer">
+                    <h3 class="story_title">
+                        {{ storyItem.title }}
+                    </h3>
+                    <p class="story_description">
+                        {{ storyItem.description }}
+                    </p>
+                </div>
+            </a>
+            <button mat-icon-button color="warn" class="edit-story" (click)="bookmark(storyItem.id)">
+                <mat-icon>favorite</mat-icon>
+            </button>
+        </li>
+    </ul>
+
+</div>
+
+<div class="emptyerror" *ngIf="StoryList.length === 0 && !IsLoading">
+    <p>
+        No stories found for <span class="query">{{ SearchQuery }}</span>
+    </p>
+</div>
+
+<div class="loading" *ngIf="IsLoading">
+    <div class="lds-grid">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>

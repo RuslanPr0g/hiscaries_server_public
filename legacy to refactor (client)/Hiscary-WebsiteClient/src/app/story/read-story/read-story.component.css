@@ -1,0 +1,67 @@
+.errorpage {
+  padding: 5%;
+  color: red;
+  font-size: 2em;
+}
+
+.readstory {
+  padding: 2%;
+}
+
+.book {
+  font-size: 1.2em;
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+.book_content {
+  text-align: justify;
+  min-height: 60vh;
+  width: 60%;
+  margin: 0 auto;
+}
+
+.play-audio {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: row;
+}
+
+.report {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.play-audio button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  height: 50px;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+
+mat-icon {
+  margin-right: 10px;
+}
+
+.book_navigation {
+  display: flex;
+  justify-content: space-evenly;
+  margin-top: 5%;
+  padding: 1%;
+}
+
+.book_pagecount {
+}
+
+.book_buttons > button {
+  margin: 0 5%;
+}
+
+.book_buttons {
+  width: 20%;
+}

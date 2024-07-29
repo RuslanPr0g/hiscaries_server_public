@@ -1,0 +1,210 @@
+<div class="loading" *ngIf="IsLoading">
+    <div class="lds-grid">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div class="loaded" *ngIf="!IsLoading && !IsError">
+    <app-headerbar></app-headerbar>
+
+    <div class="error" *ngIf="errorMessage.length > 0">
+        <p>{{ errorMessage }}</p>
+    </div>
+
+    <div class="container">
+        <section class="publish-story-section">
+            <form [formGroup]="modifystory" autocomplete='off' class='form' (submit)="modifyStoryInfo()">
+                <div class='control'>
+                    <h1>
+                        Modify a story
+                    </h1>
+                </div>
+
+                <div class='control block-cube block-input'>
+                    <input formControlName="title" name='title' placeholder='Title' type='title' required>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                </div>
+
+                <div class='control block-cube block-input'>
+                    <input formControlName="description" name='description' placeholder='Description' type='description' required>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                </div>
+
+                <div class='control block-cube block-input'>
+                    <input formControlName="authorname" name='authorname' placeholder='Author' type='authorname' required>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                </div>
+
+                <div class='control block-cube block-input'>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner bg-efefef'></div>
+                    </div>
+                    <div class="genre-block">
+                        <span class="genre-title">Genre</span>
+                        <mat-form-field appearance="fill">
+                            <mat-select [(ngModel)]="selectedValue" multiple name="genre" [ngModelOptions]="{standalone: true}">
+                                <mat-option *ngFor="let genre of genres" [value]="genre.id">
+                                    {{genre.name}}
+                                </mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- 
+                <div class='control block-cube block-input'>
+                    <input formControlName="genreid" name='genreid' placeholder='Genre' type='genreid' required>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                </div> -->
+
+                <div class='control block-cube block-input'>
+                    <input formControlName="agelimit" name='agelimit' placeholder='Age Limit' type='agelimit' required>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                </div>
+
+
+                <div class="file-upload">
+                    <h3>Image preview file</h3>
+                    <h4 *ngIf="imageError !== null" class="color-error">{{imageError}}</h4>
+                    <input type="file" (change)="uploadimage($event)" class="fileInputProfile">
+                </div>
+
+                <div class="audio-files control block-cube block-input">
+                    <h3>Audio file</h3>
+                    <h4 *ngIf="audioError !== null" class="color-error">{{audioError}}</h4>
+                    <input type="file" accept="audio/*" (change)="uploadAudio($event)">
+
+                    <button *ngIf="!sureToDelete" mat-flat-button color="primary" (click)="amISureToDelete($event)">Delete audio</button>
+                    <button *ngIf="sureToDelete" mat-flat-button color="primary" (click)="deleteAudio($event)">I confirm to delete audio from this story</button>
+                </div>
+
+                <button class='btn block-cube block-cube-hover' type='submit'>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='text'>
+                        Apply
+                    </div>
+                </button>
+                <br>
+                <button class='btn block-cube block-cube-red block-cube-hover' type='button' (click)="cancel()">
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='text'>
+                        Cancel
+                    </div>
+                </button>
+                <br>
+                <button class='btn block-cube block-cube-red block-cube-hover' type='button' (click)="deleteStory()">
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='text'>
+                        Delete
+                    </div>
+                </button>
+            </form>
+        </section>
+        <section class="publish-pages-section">
+            <h1>
+                Modify pages for the story
+            </h1>
+
+            <h2 *ngIf="profanityError" class="color-error">
+                Your page contains profanity
+            </h2>
+
+            <angular-editor [(ngModel)]="htmlContent" [config]="config"></angular-editor>
+            <div class="current-page">
+                Current page: {{CurrentPage + 1}}/{{pages.length}}
+            </div>
+            <div class="controls">
+                <button (click)="prevPage()" class="btn btn-info">
+                    Prev page
+                </button>
+                <button (click)="removePage()" class="btn btn-warning">
+                    Remove page
+                </button>
+                <button (click)="nextPage()" class="btn btn-info">
+                    Next page
+                </button>
+                <button (click)="publishPages($event)" class="btn btn-success">
+                    Publish changes
+                </button>
+            </div>
+        </section>
+    </div>
+</div>

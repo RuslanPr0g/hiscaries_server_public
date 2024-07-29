@@ -1,0 +1,158 @@
+<div class="loading" *ngIf="IsLoading">
+    <div class="lds-grid">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div class="error" *ngIf="errorMessage.length > 0">
+    <p>{{ errorMessage }}</p>
+</div>
+
+<div class="errorpage" *ngIf="IsError && !IsLoading">
+    Something went wrong... Try to <a href="/login">log in</a> again, please.
+</div>
+
+
+<div class="loaded" *ngIf="!IsLoading && !IsError">
+    <app-headerbar></app-headerbar>
+
+    <section class="userdatasection" *ngIf="!IsError">
+        <div class="userdata">Username: {{ User.username }}</div>
+        <div class="userdata">Email: {{ User.email }}</div>
+        <div class="userdata">Age: {{ User.age }}</div>
+        <div class="userdata">Account Created: {{ User.accountCreated | date: 'MMM dd, yyyy' }}</div>
+        <div class="userdata">Total Reads (People read you): {{ User.totalReads }}</div>
+        <div class="userdata">Total Stories: {{ User.totalStories }}</div>
+        <div class="userdata">Average Score: {{ User.averageScore | number: '1.0-2' }}</div>
+        <br>
+
+        <div class="userdata">
+            <form [formGroup]="formuserdata" autocomplete='off' class='form' (submit)="updateUserData()">
+                <div class='control block-cube block-input'>
+                    <input formControlName="email" name='email' placeholder='Email' type='text' required>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                </div>
+                <div class='control block-cube block-input'>
+                    <input formControlName="dob" name='dob' value="1000-01-01" type='date' required>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                </div>
+
+                <button class='btn block-cube block-cube-hover' type='submit'>
+                    <div class='bg-top'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg-right'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='bg'>
+                        <div class='bg-inner'></div>
+                    </div>
+                    <div class='text'>
+                        Update Profile Data
+                    </div>
+                </button>
+            </form>
+        </div>
+        <br>
+        <!-- <div class="userdata">
+        <form [formGroup]="formupdatepassword" autocomplete='off' class='form' (submit)="updatePassword()">
+            <div class='control block-cube block-input'>
+                <input formControlName="oldPassword" name='oldPassword' placeholder='Current Password' type='text' required>
+                <div class='bg-top'>
+                    <div class='bg-inner'></div>
+                </div>
+                <div class='bg-right'>
+                    <div class='bg-inner'></div>
+                </div>
+                <div class='bg'>
+                    <div class='bg-inner'></div>
+                </div>
+            </div>
+            <div class='control block-cube block-input'>
+                <input formControlName="newPassword" name='newPassword' placeholder='New Password' type='text' required>
+                <div class='bg-top'>
+                    <div class='bg-inner'></div>
+                </div>
+                <div class='bg-right'>
+                    <div class='bg-inner'></div>
+                </div>
+                <div class='bg'>
+                    <div class='bg-inner'></div>
+                </div>
+            </div>
+
+            <button class='btn block-cube block-cube-hover' type='submit'>
+                <div class='bg-top'>
+                    <div class='bg-inner'></div>
+                </div>
+                <div class='bg-right'>
+                    <div class='bg-inner'></div>
+                </div>
+                <div class='bg'>
+                    <div class='bg-inner'></div>
+                </div>
+                <div class='text'>
+                    Update Password
+                </div>
+            </button>
+        </form>
+    </div> -->
+    </section>
+
+    <section class="home-section">
+        <h1 class="text-center" *ngIf="StoryList.length > 0">My stories</h1>
+        <h1 class="text-center" *ngIf="StoryList.length === 0">Nothing posted yet, try to come up with a new story!</h1>
+    </section>
+    <ul class="story-list">
+        <li class="story-list_item" *ngFor="let storyItem of StoryList">
+            <a href="/story/info/{{storyItem.id}}" class="story">
+
+                <div class="story_header">
+                    <img src="data:image/png;base64,{{ storyItem.imagePreview }}" alt="story preview" class="story_header_background">
+                    <div class="author">
+                        <div class="author_preview">
+                        </div>
+                        <div class="author_name">
+                            {{ storyItem.authorName }}
+                        </div>
+                    </div>
+                </div>
+                <div class="story_footer">
+                    <h3 class="story_title">
+                        {{ storyItem.title }}
+                    </h3>
+                    <p class="story_description">
+                        {{ storyItem.description }}
+                    </p>
+                </div>
+            </a>
+            <a class="edit-stor" href="/modifystory/{{storyItem.id}}" mat-icon-button aria-label="Example icon button with a open in new tab icon" *ngIf="User.id == storyItem.publisherId">
+                <mat-icon>open_in_new</mat-icon>
+            </a>
+        </li>
+    </ul>
+</div>

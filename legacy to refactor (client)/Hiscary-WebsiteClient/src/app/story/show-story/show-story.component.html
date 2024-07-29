@@ -1,0 +1,31 @@
+<ul class="story-list">
+    <li class="story-list_item" *ngFor="let storyItem of StoryList">
+        <a href="/story/info/{{storyItem.id}}" class="story">
+
+            <div class="story_header">
+                <img src="data:image/png;base64,{{ storyItem.imagePreview }}" alt="story preview" class="story_header_background">
+                <div class="author">
+                    <div class="author_preview">
+                    </div>
+                    <div class="author_name">
+                        {{ storyItem.authorName }}
+                    </div>
+                </div>
+            </div>
+            <div class="story_footer">
+                <h3 class="story_title">
+                    {{ storyItem.title }}
+                </h3>
+                <p class="story_description">
+                    {{ storyItem.description }}
+                </p>
+            </div>
+        </a>
+        <a class="edit-story" href="/modifystory/{{storyItem.id}}" mat-icon-button aria-label="Example icon button with a open in new tab icon" *ngIf="CurrentUser.id == storyItem.publisherId">
+            <mat-icon>open_in_new</mat-icon>
+        </a>
+        <button mat-icon-button color="warn" class="edit-story" (click)="bookmark(storyItem.id)">
+            <mat-icon>favorite</mat-icon>
+        </button>
+    </li>
+</ul>

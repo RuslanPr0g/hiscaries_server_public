@@ -1,0 +1,129 @@
+<div class="loading" *ngIf="IsLoading">
+    <div class="lds-grid">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<div class="errorpage" *ngIf="IsError && !IsLoading">
+    <app-headerbar></app-headerbar>
+    <div class="mt-5">Either there is no such story you're looking for or story has been deleted.</div>
+</div>
+
+<div class="error" *ngIf="errorMessage.length > 0">
+    <p>{{ errorMessage }}</p>
+</div>
+
+<div class="loaded" *ngIf="!IsLoading && !IsError">
+    <img src="data:image/png;base64,{{ Story.imagePreview }}" alt="story preview" class="story_preview">
+    <app-headerbar></app-headerbar>
+
+    <div class="two-screens">
+        <section class="storyinfo" *ngIf="!IsError">
+            <div class="storydata"><strong>Story:</strong></div>
+            <div class="storydata">Title: {{ Story.title }}</div>
+            <div class="storydata">Description: {{ Story.description }}</div>
+            <div class="storydata">Age Limit: {{ Story.ageLimit }}</div>
+            <div class="storydata">Author Name: {{ Story.authorName }}</div>
+            <div class="storydata">Genres: {{ Story.genres }}</div>
+            <div class="storydata">Written: {{ Story.dateWritten | date: 'MMM dd, yyyy' }}
+
+            </div>
+            <div class="storydata">Published: {{ Story.datePublished | date: 'MMM dd, yyyy' }}
+
+            </div>
+            <div class="storydata">Average Score: {{ Story.averageScore }}</div>
+            <div class="storydata">Read Counter: {{ Story.readCount }}</div>
+            <div class="storydata">Comments: {{ Story.commentCount }}</div>
+            <br>
+            <div class="storydata"><strong>Publisher:</strong></div>
+            <div class="storydata">Has Total Stories: {{ Story.publisher.totalStories }}</div>
+            <div class="storydata">Has Total Reads: {{ Story.publisher.totalReads }}</div>
+            <div class="storydata">Has Average Score: {{ Story.publisher.averageScore | number: '1.0-2' }}</div>
+            <a href="/publisher/{{Story.publisher.username}}">View profile</a>
+            <br>
+            <br>
+            <br>
+            <br>
+        </section>
+        <section class="storyinfo">
+            <a href="/story/read/{{Story.id}}" class="btn btn-info big-btn">
+                Read story NOW!
+            </a>
+        </section>
+    </div>
+    <div class="comments">
+        <section class="scoring">
+            <button mat-icon-button color="accent" *ngFor="let ratingId of ratingArr;index as i" [id]="'star_'+i" (click)="onClick(i+1)" [matTooltip]="ratingId" matTooltipPosition="above">
+                <mat-icon>
+                  {{showIcon(i)}}
+                </mat-icon>
+              </button>
+            <mat-error *ngIf="starCount == null || starCount == 0">
+                Star count is <strong>required</strong> and cannot be zero
+            </mat-error>
+        </section>
+        <section class="write-comment">
+            <form class="example-form">
+                <mat-form-field class="example-full-width" appearance="fill" [style.width.%]=50>
+                    <mat-label>Leave a comment</mat-label>
+                    <textarea matInput placeholder="Ex. It makes me feel..." [(ngModel)]='CurrentComment' [ngModelOptions]="{standalone: true}"></textarea>
+                </mat-form-field>
+                <button mat-raised-button color="primary" class="addcomment" (click)="writeComment()">
+                    Publish
+                </button>
+            </form>
+        </section>
+        <section class="comments-section">
+            <ul class="comment-list" *ngIf="CommentList.length > 0 && !IsLoading">
+                <li class="comment-list_item" *ngFor="let commentItem of CommentList">
+                    <div class="comment">
+                        <div class="comment_header">
+                            <div class="author">
+                                <div class="author_preview">
+                                    <section class="scoring">
+                                        <div mat-icon-button color="accent" *ngFor="let in of counter(commentItem.score);let i = index" [id]="'star_'+i" matTooltipPosition="above">
+                                            <mat-icon>
+                                                {{showIcon100(i)}}
+                                            </mat-icon>
+                                        </div>
+                                    </section>
+                                </div>
+                                <p class="author_name">
+                                    {{ commentItem.username }}
+                                </p>
+                                <p class="comment_at">
+                                    {{ commentItem.commentedAt | date: 'MMM dd, yyyy' }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="comment_footer">
+                            <mat-expansion-panel hideToggle>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-description>
+                                        {{ commentItem.content | slice:0:15 }}...
+                                    </mat-panel-description>
+                                </mat-expansion-panel-header>
+                                <div class="expandedthing">
+                                    {{ commentItem.content }}
+                                </div>
+                            </mat-expansion-panel>
+                            <div class="edit-comment" *ngIf="commentItem.userId == User.id">
+                                <button mat-icon-button color="warn" (click)="removeComment(commentItem.id)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </section>
+    </div>
+</div>
