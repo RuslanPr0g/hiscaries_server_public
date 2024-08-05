@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthButtonComponent } from '../../shared/auth/auth-button/auth-button.component';
-import { AuthFormComponent } from '../../shared/auth/auth-form/auth-form.component';
-import { AuthInputComponent } from '../../shared/auth/auth-input/auth-input.component';
+import { AuthButtonComponent } from './auth-button/auth-button.component';
+import { AuthFormComponent } from './auth-form/auth-form.component';
+import { AuthInputComponent } from './auth-input/auth-input.component';
 import { UserService } from '../services/user.service';
 
 @Component({
@@ -47,9 +47,6 @@ export class LoginComponent implements OnInit {
   }
 
   logIn(): void {
-    console.warn(this.formlogin?.value);
-    return;
-
     if (this.formlogin?.invalid) {
       this.errorMessage = "All fields are required!";
       return;
@@ -64,9 +61,6 @@ export class LoginComponent implements OnInit {
   }
 
   signUp(): void {
-    console.warn(this.formregister?.value);
-    return;
-
     if (this.formregister?.invalid) {
       this.errorMessage = "All fields are required and must be valid!";
       return;
