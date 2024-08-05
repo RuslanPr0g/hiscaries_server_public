@@ -1,0 +1,19 @@
+.signin {
+    font-family: monospace, serif;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    height: 96vh;
+    width: 98vw;
+
+    &_mode {
+        position: absolute;
+        top: 0;
+        left: 0;
+        font-size: 5em;
+        text-align: center;
+        padding: 1%;
+        user-select: none;
+        color: #B3B3B3;
+    }
+}

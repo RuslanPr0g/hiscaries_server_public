@@ -6,14 +6,14 @@
 
 <div class="signin">
     @if (isLoginState) {
-    <app-auth-form [formGroup]="formlogin" [formTitle]="'Log in'" (submitForm)="logIn()">
+    <app-auth-form [formGroup]="formlogin" (submitForm)="logIn()">
         <app-auth-input formControlName="Username" type="username" placeholder="Username"></app-auth-input>
         <app-auth-input formControlName="Password" type="password" placeholder="Password"></app-auth-input>
         <app-auth-button type="submit">Log In</app-auth-button>
         <app-auth-button type="button" (click)="changeState()">I need an account</app-auth-button>
     </app-auth-form>
     } @else {
-    <app-auth-form [formGroup]="formregister" [formTitle]="'Sign up'" (submitForm)="signUp()">
+    <app-auth-form [formGroup]="formregister" (submitForm)="signUp()">
         <app-auth-input formControlName="Username" type="username" placeholder="Username"></app-auth-input>
         <app-auth-input formControlName="Email" type="email" placeholder="Email"></app-auth-input>
         <app-auth-input formControlName="Dob" type="date" placeholder="Date of Birth"></app-auth-input>
@@ -22,4 +22,7 @@
         <app-auth-button type="button" (click)="changeState()">I have an account</app-auth-button>
     </app-auth-form>
     }
+    <div class="signin_mode">
+        {{ isLoginState ? 'Log in' : 'Sign up' }}
+    </div>
 </div>

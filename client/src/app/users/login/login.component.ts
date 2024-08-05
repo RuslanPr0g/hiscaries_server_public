@@ -44,6 +44,8 @@ export class LoginComponent implements OnInit {
   changeState(): void {
     this.isLoginState = !this.isLoginState;
     this.errorMessage = '';
+    this.formlogin.reset();
+    this.formregister.reset();
   }
 
   logIn(): void {
