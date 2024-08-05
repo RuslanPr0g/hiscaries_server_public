@@ -5,6 +5,9 @@ import { AuthButtonComponent } from './auth-button/auth-button.component';
 import { AuthFormComponent } from './auth-form/auth-form.component';
 import { AuthInputComponent } from './auth-input/auth-input.component';
 import { UserService } from '../services/user.service';
+import { Store } from '@ngrx/store';
+import { updateUserInfo } from '../store/user.actions';
+import { selectUsername } from '../store/user.selector';
 
 @Component({
   standalone: true,
@@ -19,9 +22,12 @@ export class LoginComponent implements OnInit {
   isLoginState: boolean = true;
   errorMessage: string = '';
 
+  username: string;
+
   constructor(
     private service: UserService,
-    private router: Router) {
+    private router: Router,
+    private store: Store) {
     this.formlogin = new FormGroup({
       Username: new FormControl('', Validators.required),
       Password: new FormControl('', Validators.required)
@@ -32,6 +38,11 @@ export class LoginComponent implements OnInit {
       Password: new FormControl('', [Validators.required, Validators.minLength(3)]),
       Email: new FormControl('', [Validators.required, Validators.email]),
       Dob: new FormControl('', Validators.required)
+    });
+
+    this.store.select(selectUsername).subscribe((val) => {
+      console.log(val);
+      this.username = val ?? "No username yet";
     });
   }
 
@@ -56,7 +67,10 @@ export class LoginComponent implements OnInit {
 
     this.service.login(this.formlogin?.value).subscribe(
       {
-        next: () => this.router.navigateByUrl(''),
+        next: (res) => {
+          this.store.dispatch(updateUserInfo(res));
+          this.router.navigateByUrl('');
+        },
         error: error => this.handleError(error)
       }
     );
@@ -70,7 +84,10 @@ export class LoginComponent implements OnInit {
 
     this.service.register(this.formregister?.value).subscribe(
       {
-        next: () => this.router.navigateByUrl(''),
+        next: (res) => {
+          this.store.dispatch(updateUserInfo(res));
+          this.router.navigateByUrl('');
+        },
         error: error => this.handleError(error)
       }
     );

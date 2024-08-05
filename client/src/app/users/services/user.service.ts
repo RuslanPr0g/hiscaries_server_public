@@ -6,11 +6,11 @@ import { Observable, of } from "rxjs";
   })
   export class UserService {
     register(value: any) : Observable<any>  {
-      return of(5);
+      return of(value);
     }
   
     login(value: any) : Observable<any> {
-      return of(5);
+      return of(value);
     }
   
     isAuthenticated() : boolean {
