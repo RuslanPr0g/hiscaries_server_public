@@ -10,7 +10,7 @@
         <app-auth-input formControlName="Username" type="username" placeholder="Username"></app-auth-input>
         <app-auth-input formControlName="Password" type="password" placeholder="Password"></app-auth-input>
         <app-auth-button type="submit">Log In</app-auth-button>
-        <app-auth-button type="button" (click)="changeState(false)">I need an account</app-auth-button>
+        <app-auth-button type="button" (click)="changeState()">I need an account</app-auth-button>
     </app-auth-form>
     } @else {
     <app-auth-form [formGroup]="formregister" [formTitle]="'Sign up'" (submitForm)="signUp()">
@@ -19,7 +19,7 @@
         <app-auth-input formControlName="Dob" type="date" placeholder="Date of Birth"></app-auth-input>
         <app-auth-input formControlName="Password" type="password" placeholder="Password"></app-auth-input>
         <app-auth-button type="submit">Sign Up</app-auth-button>
-        <app-auth-button type="button" (click)="changeState(true)">I have an account</app-auth-button>
+        <app-auth-button type="button" (click)="changeState()">I have an account</app-auth-button>
     </app-auth-form>
     }
 </div>

@@ -41,8 +41,8 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  changeState(state: boolean): void {
-    this.isLoginState = state;
+  changeState(): void {
+    this.isLoginState = !this.isLoginState;
     this.errorMessage = '';
   }
 

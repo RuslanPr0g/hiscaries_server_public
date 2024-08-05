@@ -1,20 +1,20 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   standalone: true,
   selector: 'app-auth-form',
   templateUrl: './auth-form.component.html',
-  styleUrls: ['./auth-form.component.scss']
+  styleUrls: ['./auth-form.component.scss'],
+  imports: [FormsModule, ReactiveFormsModule]
 })
 export class AuthFormComponent {
-  @Input() form?: FormGroup;
-  @Input() formTitle?: string;
+  @Input() formGroup: FormGroup;
+  @Input() formTitle: string;
   @Output() submitForm = new EventEmitter<void>();
 
   onSubmit(): void {
-    console.warn('onSubmit');
-    if (this.form?.valid) {
+    if (this.formGroup?.valid) {
       this.submitForm.emit();
     }
   }

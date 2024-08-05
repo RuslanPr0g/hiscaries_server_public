@@ -1,6 +1,8 @@
-<form formGroup="form" (ngSubmit)="onSubmit()" autocomplete="off" class="form">
-    <div class="control">
-        <h1>{{ formTitle }}</h1>
-    </div>
-    <ng-content></ng-content>
-</form>
+@if (formGroup) {
+    <form [formGroup]="formGroup" (ngSubmit)="onSubmit()" autocomplete="off" class="form">
+        <div class="form_title">
+            <h1>{{ formTitle }}</h1>
+        </div>
+        <ng-content></ng-content>
+    </form>
+}
